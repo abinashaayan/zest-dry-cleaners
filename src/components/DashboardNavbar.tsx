@@ -19,80 +19,101 @@ const DashboardNavbar: React.FC = () => {
   };
 
   return (
-    <AppBar 
-      position="sticky" 
-      sx={{ 
-        backgroundColor: '#336B3F', 
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)', 
-        height: '100px', 
-        display: 'flex', 
+    <AppBar
+      position="sticky"
+      className="animate-slide-down"
+      sx={{
+        backgroundColor: '#336B3F',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        height: { xs: '80px', md: '100px' },
+        display: 'flex',
         justifyContent: 'center',
       }}
     >
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: '100px' }}>
-          <Box sx={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+        <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: { xs: '80px', md: '100px' }, flexWrap: { xs: 'wrap', md: 'nowrap' }, gap: { xs: 1, md: 0 } }}>
+          <Box sx={{ display: 'flex', gap: { xs: 2, sm: 3, md: 5 }, alignItems: 'center', flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
             <Link to="/dashboard" className="dashboard-navbar__brand">
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  textDecoration: 'none', 
-                  color: 'white', 
-                  fontWeight: 600,
-                }}
-              >
+              <Typography variant="h6" sx={{ textDecoration: 'none', color: 'white', fontWeight: 600, }}>
                 Zest Dry Cleaners
               </Typography>
             </Link>
-            <Button 
-              component={Link} 
-              to="/my-orders" 
-              color="inherit" 
-              sx={{ textTransform: 'none', fontWeight: 400 }}
+            <Button
+              component={Link}
+              to="/my-orders"
+              color="inherit"
+              variant="text"
+              disableRipple
+              sx={{
+                textTransform: "none",
+                fontWeight: 400,
+                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+              }}
             >
               My Orders
             </Button>
-            <Button 
-              component={Link} 
-              to="/services" 
-              color="inherit" 
-              sx={{ textTransform: 'none', fontWeight: 400 }}
+            <Button
+              component={Link}
+              to="/services-list"
+              color="inherit"
+              variant="text"
+              disableRipple
+              sx={{
+                textTransform: "none",
+                fontWeight: 400,
+                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+              }}
             >
               Services
             </Button>
-            <Button 
-              component={Link} 
-              to="/terms" 
-              color="inherit" 
-              sx={{ textTransform: 'none', fontWeight: 400 }}
+            <Button
+              component={Link}
+              to="/terms"
+              color="inherit"
+              variant="text"
+              disableRipple
+              sx={{
+                textTransform: "none",
+                fontWeight: 400,
+                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+              }}
             >
-              Terms & Condition
+              Terms & Conditions
             </Button>
-            <Button 
-              component={Link} 
-              to="/privacy" 
-              color="inherit" 
-              sx={{ textTransform: 'none', fontWeight: 400 }}
+            <Button
+              component={Link}
+              to="/privacy"
+              color="inherit"
+              variant="text"
+              disableRipple
+              sx={{
+                textTransform: "none",
+                fontWeight: 400,
+                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+              }}
             >
               Privacy Policy
             </Button>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 1, 
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, md: 2 }, flexWrap: 'nowrap' }}>
+            <Box
+              className="hover-lift smooth-transition"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: { xs: 0.5, md: 1 },
                 cursor: 'pointer',
-                color: 'white'
+                color: 'white',
+                padding: { xs: '4px', md: '8px' },
+                borderRadius: '8px',
               }}
               onClick={handleLocationClick}
             >
-              <LocationOnIcon />
-              <Typography sx={{ color: 'white', fontWeight: 400 }}>
+              <LocationOnIcon sx={{ fontSize: { xs: '18px', md: '24px' } }} />
+              <Typography sx={{ color: 'white', fontWeight: 400, fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' }, display: { xs: 'none', sm: 'block' } }}>
                 Jakarta, Indonesia
               </Typography>
-              <KeyboardArrowDownIcon />
+              <KeyboardArrowDownIcon sx={{ fontSize: { xs: '16px', md: '20px' } }} />
             </Box>
             <Menu
               anchorEl={locationAnchor}
@@ -103,11 +124,25 @@ const DashboardNavbar: React.FC = () => {
               <MenuItem onClick={handleLocationClose}>Bandung, Indonesia</MenuItem>
               <MenuItem onClick={handleLocationClose}>Surabaya, Indonesia</MenuItem>
             </Menu>
-            <IconButton color="inherit" sx={{ color: 'white' }}>
-              <NotificationsIcon />
+            <IconButton
+              color="inherit"
+              className="hover-scale smooth-transition"
+              sx={{
+                color: 'white',
+                padding: { xs: '6px', md: '8px' }
+              }}
+            >
+              <NotificationsIcon sx={{ fontSize: { xs: '20px', md: '24px' } }} />
             </IconButton>
-            <IconButton color="inherit" sx={{ color: 'white' }}>
-              <AccountCircleIcon />
+            <IconButton
+              color="inherit"
+              className="hover-scale smooth-transition"
+              sx={{
+                color: 'white',
+                padding: { xs: '6px', md: '8px' }
+              }}
+            >
+              <AccountCircleIcon sx={{ fontSize: { xs: '20px', md: '24px' } }} />
             </IconButton>
           </Box>
         </Toolbar>

@@ -1,9 +1,30 @@
 .dashboard-navbar__brand {
   text-decoration: none;
   color: white;
+  transition: opacity 0.3s ease;
 }
 
 .dashboard-navbar__brand:hover {
   text-decoration: none;
+  opacity: 0.8;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .dashboard-navbar__brand {
+    font-size: 1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-navbar__brand {
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-navbar__brand {
+    font-size: 0.85rem !important;
+  }
 }
 

@@ -17,6 +17,7 @@ interface SelectProps {
   name?: string;
   required?: boolean;
   fullWidth?: boolean;
+  variant?: 'light' | 'dark';
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -30,7 +31,10 @@ const Select: React.FC<SelectProps> = ({
   name,
   required = false,
   fullWidth = true,
+  variant = 'light',
 }) => {
+  const isDark = variant === 'dark';
+  
   return (
     <FormControl
       fullWidth={fullWidth}
@@ -38,17 +42,29 @@ const Select: React.FC<SelectProps> = ({
       error={Boolean(error)}
       sx={{
         "& .MuiInputLabel-root": {
-          color: "#336B3F",
+          color: isDark ? "rgba(250, 199, 199, 1)" : "#336B3F",
+          "&.Mui-focused": {
+            color: isDark ? "rgba(250, 199, 199, 1)" : "#336B3F",
+          },
         },
         "& .MuiOutlinedInput-root": {
           borderRadius: "14px",
-          backgroundColor: "#C9F8BA",
-          "& fieldset": { borderColor: "#336B3F" },
-          "&:hover fieldset": { borderColor: "#336B3F" },
-          "&.Mui-focused fieldset": { borderColor: "#336B3F" },
+          backgroundColor: isDark ? "transparent" : "#C9F8BA",
+          "& fieldset": { 
+            borderColor: isDark ? "rgba(250, 199, 199, 1)" : "#336B3F",
+          },
+          "&:hover fieldset": { 
+            borderColor: isDark ? "rgba(250, 199, 199, 1)" : "#336B3F",
+          },
+          "&.Mui-focused fieldset": { 
+            borderColor: isDark ? "rgba(250, 199, 199, 1)" : "#336B3F",
+          },
         },
         "& .MuiSelect-select": {
-          color: "#336B3F",
+          color: isDark ? "rgba(250, 199, 199, 1)" : "#336B3F",
+        },
+        "& .MuiSvgIcon-root": {
+          color: isDark ? "rgba(250, 199, 199, 1)" : "#336B3F",
         },
       }}
     >

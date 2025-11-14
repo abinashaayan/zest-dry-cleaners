@@ -88,15 +88,13 @@ const ServicesList: React.FC = () => {
               {services.map((service) => (
                 <Box
                   key={service.id}
-                  className="service-card"
+                  className="service-card hover-lift smooth-transition"
                   onClick={() => handleServiceClick(service.id)}
                   sx={{
                     backgroundColor: service.bgColor,
                     borderRadius: "24px",
-                    padding: { xs: "22px", md: "30px" },
+                    padding: { xs: "20px", sm: "22px", md: "30px" },
                     cursor: "pointer",
-                    transition: "transform 0.2s ease",
-                    "&:hover": { transform: "translateY(-5px)" },
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>

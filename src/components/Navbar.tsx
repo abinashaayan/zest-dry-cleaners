@@ -12,10 +12,32 @@ const Navbar: React.FC = () => {
                             <Typography variant="h6" sx={{ textDecoration: 'none', color: 'white', fontWeight: 600, ml: 2, }}>
                                 Zest Dry Cleaners
                             </Typography></Link>
-                        <Button component={Link} to="/terms" color="inherit" sx={{ textTransform: 'none', fontWeight: 400 }}>
-                            Terms & Condition
+                        <Button
+                            component={Link}
+                            to="/terms"
+                            color="inherit"
+                            variant="text"
+                            disableRipple
+                            sx={{
+                                textTransform: "none",
+                                fontWeight: 400,
+                                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+                            }}
+                        >
+                            Terms & Conditions
                         </Button>
-                        <Button component={Link} to="/privacy" color="inherit" sx={{ textTransform: 'none', fontWeight: 400 }}>
+                        <Button
+                            component={Link}
+                            to="/privacy"
+                            color="inherit"
+                            variant="text"
+                            disableRipple
+                            sx={{
+                                textTransform: "none",
+                                fontWeight: 400,
+                                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+                            }}
+                        >
                             Privacy Policy
                         </Button>
                     </Box>

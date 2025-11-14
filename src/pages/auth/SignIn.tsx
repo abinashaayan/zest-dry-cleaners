@@ -23,7 +23,6 @@ const SignIn: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Email:", email, "Password:", password);
-    // Redirect to dashboard after login
     navigate("/dashboard");
   };
 

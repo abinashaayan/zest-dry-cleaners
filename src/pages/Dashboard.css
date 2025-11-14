@@ -1,9 +1,23 @@
 .dashboard-page {
   min-height: 100vh;
   background-color: var(--primary-dark-green);
+  animation: fadeIn 0.5s ease-out;
 }
 
 .dashboard-content {
   width: 100%;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-page {
+    overflow-x: hidden;
+  }
 }
 
