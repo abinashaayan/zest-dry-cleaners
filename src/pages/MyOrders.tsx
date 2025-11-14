@@ -82,7 +82,7 @@ const MyOrders: React.FC = () => {
             <main className="my-orders-content">
                 <Container maxWidth="xl">
                     <Box className="filter-section animate-slide-down">
-                        <Select label="Status" options={statusFilter} value={filter} onChange={(e) => setFilter(e.target.value)} variant="dark" placeholder="Select Category" />
+                        <Select label="Status" options={statusFilter} value={filter} onChange={(e: React.ChangeEvent<{ value: unknown }>) => setFilter(e.target.value as string)} variant="dark" placeholder="Select Category" />
                     </Box>
                     <Box className="orders-list">
                         {orders?.map((order, index) => {
@@ -93,7 +93,7 @@ const MyOrders: React.FC = () => {
                                     className="order-card animate-slide-up hover-lift smooth-transition"
                                     style={{ animationDelay: `${index * 0.1}s` }}
                                 >
-                                    <Box className="order-card-content mb-3">
+                                    <Box className="order-card-content">
                                         <Box className="order-image-wrapper">
                                             <img src={order.image} alt={order.service} className="order-image" />
                                             <Chip
@@ -107,49 +107,51 @@ const MyOrders: React.FC = () => {
                                                     fontWeight: 600,
                                                     fontSize: '0.75rem',
                                                     height: '24px',
+                                                    borderRadius: '8px',
                                                 }}
                                             />
                                         </Box>
 
                                         {/* Service Details */}
                                         <Box className="order-details">
-                                            <Typography variant="h4" sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' }, color: '#fff', mb: 1 }}>
-                                                Service: <strong className='fs-4 fw-bold'>{order.service}</strong>
+                                            <Typography variant="h4" sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' }, color: '#fff', mb: 1, fontWeight: 400 }}>
+                                                Service: <strong style={{ fontSize: '1.5rem', fontWeight: 700 }}>{order.service}</strong>
                                             </Typography>
-                                            <Typography variant='h6' sx={{ color: '#fff', mb: 2 }}>
-                                                Category: <strong className='fs-4 fw-bold'>{order.category}</strong>
+                                            <Typography variant='h6' sx={{ color: '#fff', mb: 0, fontWeight: 400 }}>
+                                                Category: <strong style={{ fontSize: '1.25rem', fontWeight: 700 }}>{order.category}</strong>
                                             </Typography>
                                         </Box>
 
                                         {/* Date and Track Button */}
                                         <Box className="order-actions">
-                                            <Typography variant='h6' sx={{ color: '#fff', mb: 2, textAlign: { xs: 'left', md: 'right' } }}>
+                                            <Typography variant='h6' sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2, textAlign: { xs: 'left', md: 'right' }, fontWeight: 400 }}>
                                                 {order.date}
                                             </Typography>
-                                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
                                                 <Button
                                                     onClick={() => handleTrackOrder(order.id)}
                                                     variant="secondary"
                                                     size="medium"
                                                     className="hover-lift smooth-transition rounded-pill"
+                                                    style={{ minWidth: 'auto', paddingLeft: '16px', paddingRight: '16px' }}
                                                 >
                                                     Track Order
-                                                    <ArrowForwardIcon sx={{ ml: 1, fontSize: '18px' }} />
                                                 </Button>
                                                 <Button
                                                     variant="secondary"
                                                     size="medium"
                                                     className="hover-lift smooth-transition rounded-pill"
+                                                    style={{ minWidth: '40px', paddingLeft: '12px', paddingRight: '12px' }}
                                                 >
-                                                    <ArrowForwardIcon sx={{ ml: 1, fontSize: '18px' }} />
+                                                    <ArrowForwardIcon sx={{ fontSize: '18px' }} />
                                                 </Button>
                                             </Box>
                                         </Box>
                                     </Box>
-                                    <Divider sx={{ border: '1px solid rgba(0, 0, 0, 1)' }} />
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
-                                        <LocationOnIcon sx={{ fontSize: '18px', color: '#fff' }} />
-                                        <Typography variant='h6' sx={{ color: '#fff' }}>
+                                    <Divider sx={{ borderColor: 'rgba(201, 248, 186, 0.3)', my: 0, mt: 2 }} />
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, pl: 3 }}>
+                                        <LocationOnIcon sx={{ fontSize: '18px', color: '#C9F8BA' }} />
+                                        <Typography variant='h6' sx={{ color: '#fff', fontWeight: 400 }}>
                                             {order.address}
                                         </Typography>
                                     </Box>

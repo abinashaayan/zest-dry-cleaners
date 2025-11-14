@@ -9,6 +9,7 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
   className?: string;
   disabled?: boolean;
+  style?: React.CSSProperties;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,6 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   className = '',
   disabled = false,
+  style,
 }) => {
   return (
     <button
@@ -26,6 +28,7 @@ const Button: React.FC<ButtonProps> = ({
       className={`custom-button custom-button--${variant} custom-button--${size} ${className}`}
       onClick={onClick}
       disabled={disabled}
+      style={style}
     >
       {children}
     </button>
