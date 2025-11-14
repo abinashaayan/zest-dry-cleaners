@@ -65,7 +65,7 @@ const SignIn: React.FC = () => {
           </Box>
         </Paper>
 
-        <Box sx={{textAlign:'center'}}>
+        <Box sx={{ textAlign: 'center' }}>
           <Divider sx={{ my: 3, color: "white" }}>OR</Divider>
           <Button
             variant="light"
@@ -76,8 +76,7 @@ const SignIn: React.FC = () => {
             <GoogleIcon style={{ color: "#EA4335", marginRight: "8px" }} />
             Continue with Google
           </Button>
-
-          <Typography sx={{ mt: 3, color: "rgba(223, 213, 213, 0.5))", fontSize: "0.95rem", }}>
+          <Typography sx={{ mt: 1, color: "#d5cdcd", fontSize: "0.95rem", }}>
             Don’t have an account?{" "}
             <Link to="/signup" style={{ color: "rgba(117, 221, 82, 1)", fontWeight: 600, textDecoration: "none", }}>
               Sign Up

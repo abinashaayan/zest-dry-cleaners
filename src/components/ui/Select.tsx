@@ -1,5 +1,5 @@
-import React from 'react';
-import './Select.css';
+import React from "react";
+import { FormControl, InputLabel, Select as MuiSelect, MenuItem } from "@mui/material";
 
 interface SelectOption {
   value: string;
@@ -10,13 +10,13 @@ interface SelectProps {
   label?: string;
   options: SelectOption[];
   value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (e: React.ChangeEvent<{ value: unknown }>) => void;
   placeholder?: string;
   error?: string;
   disabled?: boolean;
-  className?: string;
   name?: string;
   required?: boolean;
+  fullWidth?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -27,41 +27,60 @@ const Select: React.FC<SelectProps> = ({
   placeholder,
   error,
   disabled = false,
-  className = '',
   name,
   required = false,
+  fullWidth = true,
 }) => {
   return (
-    <div className={`custom-select ${className}`}>
-      {label && (
-        <label className="custom-select__label">
-          {label}
-          {required && <span className="custom-select__required">*</span>}
-        </label>
-      )}
-      <select
-        className={`custom-select__select ${error ? 'custom-select__select--error' : ''}`}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
+    <FormControl
+      fullWidth={fullWidth}
+      required={required}
+      error={Boolean(error)}
+      sx={{
+        "& .MuiInputLabel-root": {
+          color: "#336B3F",
+        },
+        "& .MuiOutlinedInput-root": {
+          borderRadius: "14px",
+          backgroundColor: "#C9F8BA",
+          "& fieldset": { borderColor: "#336B3F" },
+          "&:hover fieldset": { borderColor: "#336B3F" },
+          "&.Mui-focused fieldset": { borderColor: "#336B3F" },
+        },
+        "& .MuiSelect-select": {
+          color: "#336B3F",
+        },
+      }}
+    >
+      {label && <InputLabel>{label}</InputLabel>}
+
+      <MuiSelect
+        label={label}
+        value={value || ""}
         name={name}
-        required={required}
+        onChange={onChange as any}
+        disabled={disabled}
       >
         {placeholder && (
-          <option value="" disabled>
+          <MenuItem disabled value="">
             {placeholder}
-          </option>
+          </MenuItem>
         )}
+
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <MenuItem key={option.value} value={option.value}>
             {option.label}
-          </option>
+          </MenuItem>
         ))}
-      </select>
-      {error && <span className="custom-select__error">{error}</span>}
-    </div>
+      </MuiSelect>
+
+      {error && (
+        <p style={{ color: "#e74c3c", fontSize: "12px", marginTop: "4px" }}>
+          {error}
+        </p>
+      )}
+    </FormControl>
   );
 };
 
 export default Select;
-

@@ -11,6 +11,7 @@ import ForgotPassword from '../pages/auth/ForgotPassword';
 import ResetEmailSent from '../pages/auth/ResetEmailSent';
 import SetNewPassword from '../pages/auth/SetNewPassword';
 import Welcome from '../pages/auth/Welcome';
+import GettingStarted from '../pages/auth/GettingStarted';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/" element={<AuthLayout />}>
           <Route path="signin" element={<SignIn />} />
           <Route path="login" element={<SignIn />} />
+           <Route path="signup" element={<GettingStarted />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-email-sent" element={<ResetEmailSent />} />
           <Route path="set-new-password" element={<SetNewPassword />} />

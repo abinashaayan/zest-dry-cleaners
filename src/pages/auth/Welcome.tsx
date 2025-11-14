@@ -12,7 +12,7 @@ const Welcome: React.FC = () => {
 
   const handleContinue = () => {
     if (!phone) return alert('Please enter your phone number');
-    navigate('/otp'); // redirect to next page (e.g., OTP)
+    navigate('/signup');
   };
 
   return (
@@ -32,16 +32,7 @@ const Welcome: React.FC = () => {
             Welcome
           </Typography>
 
-          <Typography
-            variant="body1"
-            sx={{
-              textAlign: 'center',
-              color: '#1B4D3E',
-              opacity: 0.8,
-              mb: 4,
-              fontSize: { xs: '0.9rem', md: '1rem' },
-            }}
-          >
+          <Typography variant="body1" sx={{ textAlign: 'center', color: '#1B4D3E', opacity: 0.8, mb: 4, fontSize: { xs: '0.9rem', md: '1rem' }, }}>
             Enter your phone number to get started.
           </Typography>
 
@@ -71,15 +62,11 @@ const Welcome: React.FC = () => {
             Privacy and agreements
           </Typography>
 
-          <Button
-            onClick={handleContinue}
-            variant="primary"
-            size="large"
-            className="continue-btn"
-            style={{ width: '100%' }}
-          >
-            Continue
-          </Button>
+          <Box sx={{ textAlign: 'center' }}>
+            <Button onClick={handleContinue} variant="primary" size="large" className="continue-btn w-100">
+              Continue
+            </Button>
+          </Box>
         </Box>
       </Container>
     </Box>

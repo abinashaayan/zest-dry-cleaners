@@ -21,7 +21,6 @@ const HeroSection: React.FC = () => {
           left: 0,
           width: { xs: "100%", md: "50%" },
           height: "100%",
-          backgroundColor: { xs: "rgba(255, 255, 255, 0.85)", md: "rgba(255, 255, 255, 0.9)" },
           zIndex: 1,
         },
       }}

@@ -8,9 +8,10 @@ const Navbar: React.FC = () => {
             <Container maxWidth="lg">
                 <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: '100px' }}>
                     <Box sx={{ display: 'flex', gap: 5 }}>
-                        <Typography variant="h6" sx={{ textDecoration: 'none', color: 'white', fontWeight: 600, ml: 2, }}>
-                            Zest Dry Cleaners
-                        </Typography>
+                        <Link to="/" className='text-decoration-none'>
+                            <Typography variant="h6" sx={{ textDecoration: 'none', color: 'white', fontWeight: 600, ml: 2, }}>
+                                Zest Dry Cleaners
+                            </Typography></Link>
                         <Button component={Link} to="/terms" color="inherit" sx={{ textTransform: 'none', fontWeight: 400 }}>
                             Terms & Condition
                         </Button>
