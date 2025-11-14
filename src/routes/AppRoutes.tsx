@@ -6,6 +6,9 @@ import Home from '../pages/Home';
 import About from '../pages/About';
 import Services from '../pages/Services';
 import Contact from '../pages/Contact';
+import Dashboard from '../pages/Dashboard';
+import ServicesList from '../pages/ServicesList';
+import ServiceDetails from '../pages/ServiceDetails';
 import SignIn from '../pages/auth/SignIn';
 import ForgotPassword from '../pages/auth/ForgotPassword';
 import ResetEmailSent from '../pages/auth/ResetEmailSent';
@@ -34,6 +37,10 @@ const AppRoutes: React.FC = () => {
           <Route path="set-new-password" element={<SetNewPassword />} />
           <Route path="welcome" element={<Welcome />} />
         </Route>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/my-orders" element={<Dashboard />} />
+        <Route path="/services-list" element={<ServicesList />} />
+        <Route path="/services/:id" element={<ServiceDetails />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,0 +1,9 @@
+.dashboard-navbar__brand {
+  text-decoration: none;
+  color: white;
+}
+
+.dashboard-navbar__brand:hover {
+  text-decoration: none;
+}
+

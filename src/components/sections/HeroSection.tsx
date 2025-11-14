@@ -1,8 +1,12 @@
 import React from "react";
-import { Box, Typography, Button, Container } from "@mui/material";
+import { Box, Typography, Container } from "@mui/material";
 import heroHome from "../../assets/hero-home.png";
+import Button from "../../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{
@@ -55,23 +59,7 @@ const HeroSection: React.FC = () => {
             visualize your next big things.
           </Typography>
 
-          <Button
-            variant="contained"
-            size="large"
-            sx={{
-              backgroundColor: "#336B3F",
-              color: "white",
-              px: { xs: 3, md: 4 },
-              py: { xs: 1, md: 1.5 },
-              fontSize: { xs: "0.9rem", md: "1rem" },
-              textTransform: "none",
-              borderRadius: "6px",
-              width: { xs: "100%", sm: "auto" },
-              "&:hover": {
-                backgroundColor: "#285C34",
-              },
-            }}
-          >
+          <Button onClick={() => navigate('/signup')} type="submit" variant="primary" size="large" className="w-full">
             Get Started
           </Button>
         </Box>

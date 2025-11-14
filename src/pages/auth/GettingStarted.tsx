@@ -111,7 +111,7 @@ const GettingStarted: React.FC = () => {
         <Box sx={{ textAlign: 'center' }}>
           <Typography sx={{ mt: 1, color: "#d5cdcd", fontSize: "0.95rem", }}>
             Already have an account?{" "}
-            <Link to="/signup" style={{ color: "rgba(117, 221, 82, 1)", fontWeight: 600, textDecoration: "none", }}>
+            <Link to="/signin" style={{ color: "rgba(117, 221, 82, 1)", fontWeight: 600, textDecoration: "none", }}>
               Login
             </Link>
           </Typography>

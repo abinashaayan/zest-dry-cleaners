@@ -10,11 +10,12 @@ import {
   Divider,
 } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TextFieldComponent from '../../components/ui/TextField';
 import Button from "../../components/ui/Button";
 
 const SignIn: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("hannah.turin@email.com");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +23,8 @@ const SignIn: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Email:", email, "Password:", password);
+    // Redirect to dashboard after login
+    navigate("/dashboard");
   };
 
   return (

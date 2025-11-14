@@ -1,0 +1,40 @@
+.service-details-page {
+  min-height: 100vh;
+  background-color: var(--primary-dark-green);
+}
+
+.custom-button--green{
+  background-color: rgba(201, 248, 186, 1);
+  color: rgba(51, 107, 63, 1);
+  font-weight: bold;
+}
+
+.service-details-content {
+  padding: 40px 20px;
+}
+
+.service-selection-section {
+  background-color: var(--primary-dark-green);
+}
+
+/* Tablet and Desktop */
+@media (min-width: 768px) {
+  .service-details-content {
+    padding: 60px 20px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .service-details-content {
+    padding: 80px 20px;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 767px) {
+  .service-details-content {
+    padding: 30px 16px;
+  }
+}
+

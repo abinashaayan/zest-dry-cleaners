@@ -1,0 +1,9 @@
+.dashboard-page {
+  min-height: 100vh;
+  background-color: var(--primary-dark-green);
+}
+
+.dashboard-content {
+  width: 100%;
+}
+

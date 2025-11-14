@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import './ServicesSection.css';
@@ -59,9 +60,11 @@ const ServicesSection: React.FC = () => {
         <div className="services-section__container">
           <div className="services-section__header">
             <h2 className="services-section__title">Services</h2>
-            <Button variant="secondary" size="small" className="services-section__button rounded-pill">
-              See All
-            </Button>
+            <Link to="/services-list" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary" size="small" className="services-section__button rounded-pill">
+                See All Services
+              </Button>
+            </Link>
           </div>
           <div className="services-section__grid">
             {services?.map((service) => (
