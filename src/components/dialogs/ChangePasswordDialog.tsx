@@ -48,21 +48,22 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
       PaperProps={{
         sx: {
           backgroundColor: "rgba(201, 248, 186, 1)",
-          borderRadius: "28px",
+          borderRadius: { xs: "20px", sm: "24px", md: "28px" },
+          margin: { xs: 1, sm: 2 },
         }
       }}
     >
-      <DialogTitle sx={{ color: "#336B3F", fontWeight: "bold", fontSize: "1.5rem" }}>
+      <DialogTitle sx={{ color: "#336B3F", fontWeight: "bold", fontSize: { xs: "1.25rem", sm: "1.4rem", md: "1.5rem" }, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 2.5, md: 3 } }}>
         Change Password
-        <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8, color: "#336B3F", }}>
-          <CloseIcon />
+        <IconButton onClick={onClose} sx={{ position: "absolute", right: { xs: 4, sm: 8 }, top: { xs: 4, sm: 8 }, color: "#336B3F", }}>
+          <CloseIcon sx={{ fontSize: { xs: "20px", sm: "24px" } }} />
         </IconButton>
       </DialogTitle>
-      <DialogContent>
-        <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", mb: 3, }}>
+      <DialogContent sx={{ px: { xs: 2, sm: 3 }, pb: { xs: 2, sm: 3 } }}>
+        <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", mb: { xs: 2, sm: 2.5, md: 3 }, fontSize: { xs: "0.8rem", sm: "0.875rem", md: "0.95rem" } }}>
           Please note changing password will required again login to the app.
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 2.5, md: 3 } }}>
           <TextFieldComponent
             label="Current Password"
             value={currentPassword}

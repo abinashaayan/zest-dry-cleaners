@@ -1,14 +1,17 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, Container, IconButton, Menu, MenuItem } from '@mui/material';
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Typography, Button, Box, Container, IconButton, Menu, MenuItem, Drawer, List, ListItem, ListItemText, Divider } from '@mui/material';
 import { Link } from 'react-router-dom';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import './DashboardNavbar.css';
 
 const DashboardNavbar: React.FC = () => {
-  const [locationAnchor, setLocationAnchor] = React.useState<null | HTMLElement>(null);
+  const [locationAnchor, setLocationAnchor] = useState<null | HTMLElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLocationClick = (event: React.MouseEvent<HTMLElement>) => {
     setLocationAnchor(event.currentTarget);
@@ -18,6 +21,95 @@ const DashboardNavbar: React.FC = () => {
     setLocationAnchor(null);
   };
 
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const drawer = (
+    <Box sx={{ width: 250, backgroundColor: '#336B3F', height: '100%', color: 'white' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, color: 'white', fontSize: { xs: '1rem', sm: '1.1rem' } }}>
+          Zest Dry Cleaners
+        </Typography>
+        <IconButton onClick={handleDrawerToggle} sx={{ color: 'white' }}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      <Divider sx={{ borderColor: 'rgba(255,255,255,0.2)' }} />
+      <List>
+        <ListItem component={Link} to="/dashboard" onClick={handleDrawerToggle} sx={{ color: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } }}>
+          <ListItemText primary="Dashboard" />
+        </ListItem>
+        <ListItem component={Link} to="/my-orders" onClick={handleDrawerToggle} sx={{ color: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } }}>
+          <ListItemText primary="My Orders" />
+        </ListItem>
+        <ListItem component={Link} to="/services-list" onClick={handleDrawerToggle} sx={{ color: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } }}>
+          <ListItemText primary="Services" />
+        </ListItem>
+        <ListItem component={Link} to="/terms" onClick={handleDrawerToggle} sx={{ color: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } }}>
+          <ListItemText primary="Terms & Conditions" />
+        </ListItem>
+        <ListItem component={Link} to="/privacy" onClick={handleDrawerToggle} sx={{ color: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } }}>
+          <ListItemText primary="Privacy Policy" />
+        </ListItem>
+      </List>
+      <Divider sx={{ borderColor: 'rgba(255,255,255,0.2)' }} />
+      <Box sx={{ p: 2 }}>
+        <Box
+          className="hover-lift smooth-transition"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            cursor: 'pointer',
+            color: 'white',
+            padding: '8px',
+            borderRadius: '8px',
+            mb: 2,
+          }}
+          onClick={(e) => {
+            handleDrawerToggle();
+            handleLocationClick(e as any);
+          }}
+        >
+          <LocationOnIcon sx={{ fontSize: '24px' }} />
+          <Typography sx={{ color: 'white', fontWeight: 400, fontSize: '1rem' }}>
+            Jakarta, Indonesia
+          </Typography>
+          <KeyboardArrowDownIcon sx={{ fontSize: '20px' }} />
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <IconButton
+            component={Link}
+            to="/notifications"
+            onClick={handleDrawerToggle}
+            color="inherit"
+            className="hover-scale smooth-transition"
+            sx={{
+              color: 'white',
+              padding: '8px'
+            }}
+          >
+            <NotificationsIcon sx={{ fontSize: '24px' }} />
+          </IconButton>
+          <IconButton
+            component={Link}
+            to="/edit-profile"
+            onClick={handleDrawerToggle}
+            color="inherit"
+            className="hover-scale smooth-transition"
+            sx={{
+              color: 'white',
+              padding: '8px'
+            }}
+          >
+            <AccountCircleIcon sx={{ fontSize: '24px' }} />
+          </IconButton>
+        </Box>
+      </Box>
+    </Box>
+  );
+
   return (
     <AppBar
       position="sticky"
@@ -25,77 +117,92 @@ const DashboardNavbar: React.FC = () => {
       sx={{
         backgroundColor: '#336B3F',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        height: { xs: '80px', md: '100px' },
+        height: { xs: '70px', sm: '80px', md: '100px' },
         display: 'flex',
         justifyContent: 'center',
       }}
     >
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: { xs: '80px', md: '100px' }, flexWrap: { xs: 'wrap', md: 'nowrap' }, gap: { xs: 1, md: 0 } }}>
-          <Box sx={{ display: 'flex', gap: { xs: 2, sm: 3, md: 5 }, alignItems: 'center', flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
+        <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: { xs: '70px', sm: '80px', md: '100px' }, flexWrap: 'nowrap', gap: { xs: 1, md: 0 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2, md: 3 } }}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: { xs: 0.5, sm: 1 }, display: { md: 'none' } }}
+            >
+              <MenuIcon />
+            </IconButton>
             <Link to="/dashboard" className="dashboard-navbar__brand">
-              <Typography variant="h6" sx={{ textDecoration: 'none', color: 'white', fontWeight: 600, }}>
+              <Typography variant="h6" sx={{ textDecoration: 'none', color: 'white', fontWeight: 600, fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' } }}>
                 Zest Dry Cleaners
               </Typography>
             </Link>
-            <Button
-              component={Link}
-              to="/my-orders"
-              color="inherit"
-              variant="text"
-              disableRipple
-              sx={{
-                textTransform: "none",
-                fontWeight: 400,
-                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
-              }}
-            >
-              My Orders
-            </Button>
-            <Button
-              component={Link}
-              to="/services-list"
-              color="inherit"
-              variant="text"
-              disableRipple
-              sx={{
-                textTransform: "none",
-                fontWeight: 400,
-                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
-              }}
-            >
-              Services
-            </Button>
-            <Button
-              component={Link}
-              to="/terms"
-              color="inherit"
-              variant="text"
-              disableRipple
-              sx={{
-                textTransform: "none",
-                fontWeight: 400,
-                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
-              }}
-            >
-              Terms & Conditions
-            </Button>
-            <Button
-              component={Link}
-              to="/privacy"
-              color="inherit"
-              variant="text"
-              disableRipple
-              sx={{
-                textTransform: "none",
-                fontWeight: 400,
-                "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
-              }}
-            >
-              Privacy Policy
-            </Button>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: { md: 2, lg: 3 }, alignItems: 'center' }}>
+              <Button
+                component={Link}
+                to="/my-orders"
+                color="inherit"
+                variant="text"
+                disableRipple
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 400,
+                  fontSize: { md: '0.9rem', lg: '1rem' },
+                  "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+                }}
+              >
+                My Orders
+              </Button>
+              <Button
+                component={Link}
+                to="/services-list"
+                color="inherit"
+                variant="text"
+                disableRipple
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 400,
+                  fontSize: { md: '0.9rem', lg: '1rem' },
+                  "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+                }}
+              >
+                Services
+              </Button>
+              <Button
+                component={Link}
+                to="/terms"
+                color="inherit"
+                variant="text"
+                disableRipple
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 400,
+                  fontSize: { md: '0.9rem', lg: '1rem' },
+                  "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+                }}
+              >
+                Terms & Conditions
+              </Button>
+              <Button
+                component={Link}
+                to="/privacy"
+                color="inherit"
+                variant="text"
+                disableRipple
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 400,
+                  fontSize: { md: '0.9rem', lg: '1rem' },
+                  "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
+                }}
+              >
+                Privacy Policy
+              </Button>
+            </Box>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, md: 2 }, flexWrap: 'nowrap' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1, md: 2 }, flexWrap: 'nowrap' }}>
             <Box
               className="hover-lift smooth-transition"
               sx={{
@@ -109,11 +216,11 @@ const DashboardNavbar: React.FC = () => {
               }}
               onClick={handleLocationClick}
             >
-              <LocationOnIcon sx={{ fontSize: { xs: '18px', md: '24px' } }} />
+              <LocationOnIcon sx={{ fontSize: { xs: '18px', sm: '20px', md: '24px' } }} />
               <Typography sx={{ color: 'white', fontWeight: 400, fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' }, display: { xs: 'none', sm: 'block' } }}>
                 Jakarta, Indonesia
               </Typography>
-              <KeyboardArrowDownIcon sx={{ fontSize: { xs: '16px', md: '20px' } }} />
+              <KeyboardArrowDownIcon sx={{ fontSize: { xs: '14px', sm: '16px', md: '20px' }, display: { xs: 'none', sm: 'block' } }} />
             </Box>
             <Menu
               anchorEl={locationAnchor}
@@ -131,10 +238,10 @@ const DashboardNavbar: React.FC = () => {
               className="hover-scale smooth-transition"
               sx={{
                 color: 'white',
-                padding: { xs: '6px', md: '8px' }
+                padding: { xs: '6px', sm: '7px', md: '8px' }
               }}
             >
-              <NotificationsIcon sx={{ fontSize: { xs: '20px', md: '24px' } }} />
+              <NotificationsIcon sx={{ fontSize: { xs: '20px', sm: '22px', md: '24px' } }} />
             </IconButton>
             <IconButton
               component={Link}
@@ -143,14 +250,28 @@ const DashboardNavbar: React.FC = () => {
               className="hover-scale smooth-transition"
               sx={{
                 color: 'white',
-                padding: { xs: '6px', md: '8px' }
+                padding: { xs: '6px', sm: '7px', md: '8px' }
               }}
             >
-              <AccountCircleIcon sx={{ fontSize: { xs: '20px', md: '24px' } }} />
+              <AccountCircleIcon sx={{ fontSize: { xs: '20px', sm: '22px', md: '24px' } }} />
             </IconButton>
           </Box>
         </Toolbar>
       </Container>
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
+        }}
+      >
+        {drawer}
+      </Drawer>
     </AppBar>
   );
 };

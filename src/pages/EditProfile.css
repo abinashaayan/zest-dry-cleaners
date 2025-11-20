@@ -14,6 +14,20 @@
   padding: 30px;
 }
 
+@media (max-width: 960px) {
+  .sidebar-card {
+    border-radius: 20px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar-card {
+    border-radius: 16px;
+    padding: 16px;
+  }
+}
+
 .sidebar-header {
   background-color: rgba(51, 107, 63, 1);
   padding: 14px 14px;
@@ -52,6 +66,13 @@
   cursor: pointer;
 }
 
+@media (max-width: 600px) {
+  .sidebar-item {
+    padding: 12px 6px;
+    border-radius: 8px;
+  }
+}
+
 .sidebar-item:hover {
   background: rgba(51, 107, 63, 1);
   color: white;
@@ -65,6 +86,12 @@
 .item-sub {
   font-size: 13px;
   opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .item-sub {
+    font-size: 11px;
+  }
 }
 
 .profile-form-card {

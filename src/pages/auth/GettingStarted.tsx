@@ -49,23 +49,29 @@ const GettingStarted: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#336B3F", display: "flex", alignItems: "center", justifyContent: "center", p: 2, }}>
-      <Container maxWidth="sm">
-        <Paper elevation={0} sx={{ borderRadius: "30px", p: { xs: 3, sm: 5 }, backgroundColor: "#C9F8BA", textAlign: "center", }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: "#336B3F", mb: 1, fontSize: { xs: "1.8rem", sm: "2.4rem" }, }}>
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#336B3F", display: "flex", alignItems: "center", justifyContent: "center", p: { xs: 1, sm: 2 }, }}>
+      <Container maxWidth="sm" sx={{ width: "100%", px: { xs: 1, sm: 2 } }}>
+        <Paper elevation={0} sx={{ borderRadius: { xs: "20px", sm: "30px" }, p: { xs: 2.5, sm: 4, md: 5 }, backgroundColor: "#C9F8BA", textAlign: "center", }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: "#336B3F", mb: 1, fontSize: { xs: "1.5rem", sm: "2rem", md: "2.4rem" }, }}>
             Getting Started
           </Typography>
 
-          <Typography sx={{ color: "rgba(51,107,63,0.7)", mb: 4, fontSize: "1.1rem", fontWeight: 400, }}>
-            Seems you are new here, Let’s set up your profile.
+          <Typography sx={{ color: "rgba(51,107,63,0.7)", mb: { xs: 3, sm: 4 }, fontSize: { xs: "0.95rem", sm: "1rem", md: "1.1rem" }, fontWeight: 400, }}>
+            Seems you are new here, Let's set up your profile.
           </Typography>
 
           {/* FORM */}
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 3 } }}>
             <TextFieldComponent label="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
             <TextFieldComponent label="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
             <TextFieldComponent label="Current Address" value={address} onChange={(e) => setAddress(e.target.value)} required />
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 3, }}>
+            <Box sx={{ 
+              display: "flex", 
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "space-between", 
+              alignItems: { xs: "stretch", sm: "center" }, 
+              gap: { xs: 2, sm: 3 },
+            }}>
               <TextFieldComponent label="Zip Code" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required />
               <Select label="State" options={indianStates} value={state} onChange={(e) => setState(e.target.value)} placeholder="Select State" required />
             </Box>
@@ -88,7 +94,7 @@ const GettingStarted: React.FC = () => {
               toggleShowPassword={() => setShowConfirmPassword(!showConfirmPassword)}
               required
             />
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#336B3F", mt: 1, }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "flex-start", color: "#336B3F", mt: { xs: 0, sm: 1 }, }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -99,17 +105,17 @@ const GettingStarted: React.FC = () => {
                     }}
                   />
                 }
-                label="By creating an account, you agree to our Terms and Conditions"
+                label={<Typography sx={{ fontSize: { xs: "0.8rem", sm: "0.875rem", md: "0.95rem" }, textAlign: "left" }}>By creating an account, you agree to our Terms and Conditions</Typography>}
               />
             </Box>
 
-            <Button onClick={() => navigate('/signin')} type="submit" variant="primary" size="large" className="w-full">
+            <Button onClick={() => navigate('/signin')} type="submit" variant="primary" size="large" className="w-full" style={{ width: "100%" }}>
               Submit
             </Button>
           </Box>
         </Paper>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ mt: 1, color: "#d5cdcd", fontSize: "0.95rem", }}>
+        <Box sx={{ textAlign: 'center', mt: { xs: 2, sm: 0 } }}>
+          <Typography sx={{ mt: { xs: 1.5, sm: 2 }, color: "#d5cdcd", fontSize: { xs: "0.875rem", sm: "0.95rem" }, }}>
             Already have an account?{" "}
             <Link to="/signin" style={{ color: "rgba(117, 221, 82, 1)", fontWeight: 600, textDecoration: "none", }}>
               Login

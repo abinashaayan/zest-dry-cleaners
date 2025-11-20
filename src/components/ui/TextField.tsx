@@ -27,9 +27,9 @@ const TextFieldComponent: React.FC<CustomTextFieldProps> = ({
   fullWidth = true,
   required = false,
   placeholder,
-  borderColor = "#C9F8BA",
-  labelColor = "#C9F8BA",
-  textColor = "#C9F8BA",
+  borderColor = "#336B3F",
+  labelColor = "#336B3F",
+  textColor = "#336B3F",
 }) => {
   return (
     <TextField
@@ -45,6 +45,7 @@ const TextFieldComponent: React.FC<CustomTextFieldProps> = ({
       sx={{
         "& .MuiInputLabel-root": {
           color: `${labelColor} !important`,
+          fontSize: { xs: "0.875rem", sm: "1rem" },
           "&.Mui-focused": {
             color: `${labelColor} !important`,
           },
@@ -53,9 +54,22 @@ const TextFieldComponent: React.FC<CustomTextFieldProps> = ({
           borderRadius: "14px",
           backgroundColor: "transparent !important",
           background: "none !important",
-          "& fieldset": { borderColor: borderColor, borderWidth: "2px" },
-          "&:hover fieldset": { borderColor: borderColor, borderWidth: "2px" },
-          "&.Mui-focused fieldset": { borderColor: borderColor, borderWidth: "2px" },
+          fontSize: { xs: "0.875rem", sm: "1rem" },
+          "& fieldset": { 
+            borderColor: `${borderColor} !important`, 
+            borderWidth: "2.5px !important",
+            borderStyle: "solid !important",
+          },
+          "&:hover fieldset": { 
+            borderColor: `${borderColor} !important`, 
+            borderWidth: "2.5px !important",
+            borderStyle: "solid !important",
+          },
+          "&.Mui-focused fieldset": { 
+            borderColor: `${borderColor} !important`, 
+            borderWidth: "3px !important",
+            borderStyle: "solid !important",
+          },
           "&:hover": {
             backgroundColor: "transparent !important",
             background: "none !important",
@@ -68,6 +82,7 @@ const TextFieldComponent: React.FC<CustomTextFieldProps> = ({
         "& .MuiOutlinedInput-input": {
           backgroundColor: "transparent !important",
           background: "none !important",
+          padding: { xs: "12px 14px", sm: "14px 16px" },
         },
         input: { 
           color: textColor,

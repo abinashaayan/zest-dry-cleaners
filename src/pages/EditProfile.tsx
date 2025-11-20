@@ -139,8 +139,6 @@ const EditProfile = () => {
   const [address, setAddress] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [state, setState] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showProfileEditForm, setShowProfileEditForm] = useState(true);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showPaymentCardForm, setShowPaymentCardForm] = useState(false);
@@ -227,8 +225,6 @@ const EditProfile = () => {
       address,
       zipCode,
       state,
-      password,
-      confirmPassword,
       profileImage,
     });
   };
@@ -237,6 +233,7 @@ const EditProfile = () => {
     setShowProfileEditForm(true);
     setShowContactForm(false);
     setShowPaymentCardForm(false);
+    setShowLocationCard(false);
   };
 
   const handleShowContactForm = () => {
@@ -260,6 +257,7 @@ const EditProfile = () => {
     setShowPaymentCardForm(true);
     setShowProfileEditForm(false);
     setShowContactForm(false);
+    setShowLocationCard(false);
   };
 
   const handleShowLocationCard = () => {
@@ -274,11 +272,25 @@ const EditProfile = () => {
   };
 
   const handleAddCard = (card: CardData) => {
-    setSavedCards([...savedCards, card]);
+    setSavedCards((prevCards) => {
+      // Check if card with same ID already exists
+      const exists = prevCards.some((c) => c.id === card.id);
+      if (exists) {
+        return prevCards; // Return existing state if duplicate
+      }
+      return [...prevCards, card];
+    });
   };
 
   const handleAddLocation = (location: LocationData) => {
-    setSavedLocations([...savedLocations, location]);
+    setSavedLocations((prevLocations) => {
+      // Check if location with same ID already exists
+      const exists = prevLocations.some((l) => l.id === location.id);
+      if (exists) {
+        return prevLocations; // Return existing state if duplicate
+      }
+      return [...prevLocations, location];
+    });
   };
 
   const maskCardNumber = (cardNumber: string) => {
@@ -293,22 +305,22 @@ const EditProfile = () => {
     <Box className="profile-page">
       <DashboardNavbar />
       <main className="my-orders-content">
-        <Container maxWidth="xl">
-          <Grid container spacing={2} gap={2}>
-            <Grid size={6}>
-              <Box className="sidebar-card">
+        <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
+          <Grid container spacing={{ xs: 2, sm: 2, md: 2 }} sx={{ gap: { xs: 2, md: 2 } }}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Box className="sidebar-card" sx={{ padding: { xs: "20px", sm: "24px", md: "30px" } }}>
                 <Box className="sidebar-item" onClick={handleShowEditProfile}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 2, sm: 2.5, md: 3 } }}>
                     <Avatar
                       src={profileImage || "https://media.istockphoto.com/id/1437816897/photo/business-woman-manager-or-human-resources-portrait-for-career-success-company-we-are-hiring.jpg?s=612x612&w=0&k=20&c=tyLvtzutRh22j9GqSGI33Z4HpIwv9vL_MZw_xOE19NQ="}
-                      sx={{ width: 60, height: 60 }}
+                      sx={{ width: { xs: 50, sm: 55, md: 60 }, height: { xs: 50, sm: 55, md: 60 } }}
                     />
                     <Box>
-                      <Typography className="item-title">theKStark</Typography>
-                      <Typography className="item-sub">ikstark@gmail.com</Typography>
+                      <Typography className="item-title" sx={{ fontSize: { xs: "0.95rem", sm: "1rem", md: "1.1rem" } }}>theKStark</Typography>
+                      <Typography className="item-sub" sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem", md: "0.875rem" } }}>ikstark@gmail.com</Typography>
                     </Box>
                   </Box>
-                  <ChevronRightIcon />
+                  <ChevronRightIcon sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }} />
                 </Box>
                 <Typography variant="h6" className="sidebar-section" sx={{ fontWeight: 'bold' }}>GENERAL</Typography>
                 <Box className="sidebar-item" onClick={() => handleShowPaymentCard()}>
@@ -341,7 +353,7 @@ const EditProfile = () => {
                     </Box>
                   </Box>
                   <FormGroup>
-                    <FormControlLabel control={<Switch defaultChecked color="rgba(51, 107, 63, 1)" size="large" />} label={undefined} />
+                    <FormControlLabel control={<Switch defaultChecked color="primary" />} label={undefined} />
                   </FormGroup>
                 </Box>
 
@@ -354,7 +366,7 @@ const EditProfile = () => {
                     </Box>
                   </Box>
                   <FormGroup>
-                    <FormControlLabel control={<Switch defaultChecked color="rgba(51, 107, 63, 1)" size="large" />} label={undefined} />
+                    <FormControlLabel control={<Switch defaultChecked color="primary" />} label={undefined} />
                   </FormGroup>
                 </Box>
                 <Typography variant="h6" className="sidebar-section" sx={{ fontWeight: 'bold' }}>MORE</Typography>
@@ -380,12 +392,13 @@ const EditProfile = () => {
                 </Box>
               </Box>
             </Grid>
-            <Grid size={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               {showProfileEditForm && (
-                <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 2.5, md: 3 } }}>
                   <Box sx={{ display: "flex", justifyContent: "center", mb: 2, position: "relative" }}>
                     <Box
                       component="label"
+                      htmlFor="profile-image-upload"
                       sx={{
                         position: "relative",
                         cursor: "pointer",
@@ -401,7 +414,7 @@ const EditProfile = () => {
                       />
                       <Avatar
                         src={profileImage || undefined}
-                        sx={{ width: 100, height: 100 }}
+                        sx={{ width: { xs: 80, sm: 90, md: 100 }, height: { xs: 80, sm: 90, md: 100 } }}
                       />
                       <Box
                         sx={{
@@ -410,36 +423,52 @@ const EditProfile = () => {
                           right: 0,
                           backgroundColor: "#336B3F",
                           borderRadius: "50%",
-                          width: 32,
-                          height: 32,
+                          width: { xs: 28, sm: 30, md: 32 },
+                          height: { xs: 28, sm: 30, md: 32 },
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           border: "2px solid #C9F8BA",
                           cursor: "pointer",
                         }}
-                        component="label"
-                        htmlFor="profile-image-upload"
                       >
                         <CameraAltIcon
                           sx={{
                             color: "#C9F8BA",
-                            fontSize: 18,
+                            fontSize: { xs: 16, sm: 17, md: 18 },
                           }}
                         />
                       </Box>
                     </Box>
                   </Box>
-                  <TextFieldComponent label="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-                  <TextFieldComponent label="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
-                  <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-                    <Box sx={{ width: "120px", flexShrink: 0 }}>
+                  <TextFieldComponent 
+                    label="Full Name" 
+                    value={fullName} 
+                    onChange={(e) => setFullName(e.target.value)} 
+                    borderColor="#C9F8BA"
+                    labelColor="#C9F8BA"
+                    textColor="#C9F8BA"
+                    required 
+                  />
+                  <TextFieldComponent 
+                    label="Email Address" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    type="email" 
+                    borderColor="#C9F8BA"
+                    labelColor="#C9F8BA"
+                    textColor="#C9F8BA"
+                    required 
+                  />
+                  <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: { xs: 2, sm: 2 }, alignItems: { xs: "stretch", sm: "flex-start" } }}>
+                    <Box sx={{ width: { xs: "100%", sm: "120px" }, flexShrink: 0 }}>
                       <Select
                         label="Code"
                         options={countryCodes}
                         value={countryCode}
                         onChange={handleCountryCodeChange}
                         fullWidth={true}
+                        variant="dark"
                       />
                     </Box>
                     <Box sx={{ flex: 1 }}>
@@ -447,14 +476,33 @@ const EditProfile = () => {
                         label="Phone Number"
                         value={phoneNumber}
                         onChange={handlePhoneNumberChange}
+                        borderColor="#C9F8BA"
+                        labelColor="#C9F8BA"
+                        textColor="#C9F8BA"
                         required
                       />
                     </Box>
                   </Box>
-                  <TextFieldComponent label="Current Address" value={address} onChange={(e) => setAddress(e.target.value)} required />
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 3, }}>
-                    <TextFieldComponent label="Zip Code" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required />
-                    <Select label="State" options={indianStates} value={state} onChange={(e) => setState(e.target.value as string)} placeholder="Select State" required />
+                  <TextFieldComponent 
+                    label="Current Address" 
+                    value={address} 
+                    onChange={(e) => setAddress(e.target.value)} 
+                    borderColor="#C9F8BA"
+                    labelColor="#C9F8BA"
+                    textColor="#C9F8BA"
+                    required 
+                  />
+                  <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "stretch", sm: "center" }, gap: { xs: 2, sm: 3 } }}>
+                    <TextFieldComponent 
+                      label="Zip Code" 
+                      value={zipCode} 
+                      onChange={(e) => setZipCode(e.target.value)} 
+                      borderColor="#C9F8BA"
+                      labelColor="#C9F8BA"
+                      textColor="#C9F8BA"
+                      required 
+                    />
+                    <Select label="State" options={indianStates} value={state} onChange={(e) => setState(e.target.value as string)} placeholder="Select State" variant="dark" required />
                   </Box>
                   <Button
                     type="button"
@@ -488,20 +536,20 @@ const EditProfile = () => {
                       <Typography variant="h6" sx={{ color: "rgba(255, 255, 255, 0.5)", fontWeight: "bold", mb: 1 }}>
                         Please choose what types of support do you need and let us know.
                       </Typography>
-                      <Grid container spacing={2}>
+                      <Grid container spacing={{ xs: 2, sm: 2 }}>
                         {[
-                          { title: "Support Chat", subtitle: "24x7 Online Support", color: "#336B3F", icon: <ChatBubbleOutlineIcon sx={{ color: "#C9F8BA", fontSize: 30 }} />, view: "chat" },
-                          { title: "Call Center", subtitle: "24x7 Customer Service", color: "#FF6B35", icon: <PhoneIcon sx={{ color: "white", fontSize: 30 }} />, view: "call" },
-                          { title: "Email", subtitle: "admin@shifty.com", color: "#9B59B6", icon: <EmailIcon sx={{ color: "white", fontSize: 30 }} />, view: "chat" },
-                          { title: "FAQ", subtitle: "+50 Answers", color: "#F1C40F", icon: <HelpOutlineIcon sx={{ color: "#336B3F", fontSize: 30 }} />, view: "faq" },
+                          { title: "Support Chat", subtitle: "24x7 Online Support", color: "#336B3F", icon: <ChatBubbleOutlineIcon sx={{ color: "#C9F8BA", fontSize: { xs: 24, sm: 28, md: 30 } }} />, view: "chat" },
+                          { title: "Call Center", subtitle: "24x7 Customer Service", color: "#FF6B35", icon: <PhoneIcon sx={{ color: "white", fontSize: { xs: 24, sm: 28, md: 30 } }} />, view: "call" },
+                          { title: "Email", subtitle: "admin@shifty.com", color: "#9B59B6", icon: <EmailIcon sx={{ color: "white", fontSize: { xs: 24, sm: 28, md: 30 } }} />, view: "chat" },
+                          { title: "FAQ", subtitle: "+50 Answers", color: "#F1C40F", icon: <HelpOutlineIcon sx={{ color: "#336B3F", fontSize: { xs: 24, sm: 28, md: 30 } }} />, view: "faq" },
                         ].map((card) => (
-                          <Grid key={card.title} size={6}>
+                          <Grid key={card.title} size={{ xs: 12, sm: 6 }}>
                             <Box
                               onClick={() => setSupportView(card.view as any)}
                               sx={{
                                 backgroundColor: "#C9F8BA",
-                                borderRadius: "16px",
-                                padding: "24px",
+                                borderRadius: { xs: "12px", sm: "16px" },
+                                padding: { xs: "16px", sm: "20px", md: "24px" },
                                 display: "flex",
                                 flexDirection: "column",
                                 alignItems: "center",
@@ -513,22 +561,22 @@ const EditProfile = () => {
                             >
                               <Box
                                 sx={{
-                                  width: 60,
-                                  height: 60,
+                                  width: { xs: 50, sm: 55, md: 60 },
+                                  height: { xs: 50, sm: 55, md: 60 },
                                   borderRadius: "50%",
                                   backgroundColor: card.color,
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
-                                  mb: 2,
+                                  mb: { xs: 1.5, sm: 2 },
                                 }}
                               >
                                 {card.icon}
                               </Box>
-                              <Typography variant="h6" sx={{ color: "#336B3F", fontWeight: "bold", mb: 1 }}>
+                              <Typography variant="h6" sx={{ color: "#336B3F", fontWeight: "bold", mb: 1, fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" } }}>
                                 {card.title}
                               </Typography>
-                              <Typography variant="body2" sx={{ color: "#336B3F", opacity: 0.7 }}>
+                              <Typography variant="body2" sx={{ color: "#336B3F", opacity: 0.7, fontSize: { xs: "0.8rem", sm: "0.875rem", md: "0.95rem" } }}>
                                 {card.subtitle}
                               </Typography>
                             </Box>
@@ -539,15 +587,15 @@ const EditProfile = () => {
                   )}
 
                   {supportView === "chat" && (
-                    <Box sx={{ backgroundColor: "#2F6B3C", borderRadius: "28px", overflow: "hidden", border:'1px solid #C9F8BA' }}>
-                      <Box sx={{ display: "flex", alignItems: "center", p: 2, borderBottom: "1px solid rgba(201, 248, 186, 0.2)" }}>
+                    <Box sx={{ backgroundColor: "#2F6B3C", borderRadius: { xs: "20px", sm: "24px", md: "28px" }, overflow: "hidden", border:'1px solid #C9F8BA' }}>
+                      <Box sx={{ display: "flex", alignItems: "center", p: { xs: 1.5, sm: 2 }, borderBottom: "1px solid rgba(201, 248, 186, 0.2)" }}>
                         <IconButton onClick={() => setSupportView("menu")} sx={{ color: "#C9F8BA", mr: 1 }}>
                           <ArrowBackIosNewOutlinedIcon fontSize="small" />
                         </IconButton>
-                        <Typography sx={{ flexGrow: 1, color: "#C9F8BA", fontWeight: "bold" }}>Assistant</Typography>
-                        <Typography sx={{ color: "rgba(201, 248, 186, 0.6)", fontSize: "0.85rem" }}>Online</Typography>
+                        <Typography sx={{ flexGrow: 1, color: "#C9F8BA", fontWeight: "bold", fontSize: { xs: "0.9rem", sm: "1rem" } }}>Assistant</Typography>
+                        <Typography sx={{ color: "rgba(201, 248, 186, 0.6)", fontSize: { xs: "0.75rem", sm: "0.85rem" } }}>Online</Typography>
                       </Box>
-                      <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2, minHeight: 450 }}>
+                      <Box sx={{ p: { xs: 2, sm: 2.5, md: 3 }, display: "flex", flexDirection: "column", gap: 2, minHeight: { xs: 300, sm: 400, md: 450 } }}>
                         {chatMessages?.map((message) => (
                           <Box
                             key={message.id}
@@ -568,46 +616,46 @@ const EditProfile = () => {
                           </Box>
                         ))}
                       </Box>
-                      <Box sx={{ backgroundColor: "#C9F8BA", display: "flex", alignItems: "center", gap: 1.5, p: 2 }}>
-                        <IconButton sx={{ color: "#336B3F" }}>
-                          <ImageOutlinedIcon />
+                      <Box sx={{ backgroundColor: "#C9F8BA", display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 }, p: { xs: 1.5, sm: 2 }, flexWrap: "nowrap" }}>
+                        <IconButton sx={{ color: "#336B3F", padding: { xs: "6px", sm: "8px" } }}>
+                          <ImageOutlinedIcon sx={{ fontSize: { xs: "20px", sm: "24px" } }} />
                         </IconButton>
-                        <IconButton sx={{ color: "#336B3F" }}>
-                          <MicNoneOutlinedIcon />
+                        <IconButton sx={{ color: "#336B3F", padding: { xs: "6px", sm: "8px" } }}>
+                          <MicNoneOutlinedIcon sx={{ fontSize: { xs: "20px", sm: "24px" } }} />
                         </IconButton>
-                        <Box sx={{ flexGrow: 1, backgroundColor: "rgba(51, 107, 63, 0.1)", borderRadius: "24px", display: "flex", alignItems: "center", px: 2 }}>
+                        <Box sx={{ flexGrow: 1, backgroundColor: "rgba(51, 107, 63, 0.1)", borderRadius: { xs: "20px", sm: "24px" }, display: "flex", alignItems: "center", px: { xs: 1.5, sm: 2 }, minWidth: 0 }}>
                           <input
                             value={chatInput}
                             onChange={(e) => setChatInput(e.target.value)}
                             placeholder="Aa"
-                            style={{ flexGrow: 1, border: "none", background: "transparent", outline: "none", color: "#336B3F", fontSize: "1rem" }}
+                            style={{ flexGrow: 1, border: "none", background: "transparent", outline: "none", color: "#336B3F", fontSize: "0.875rem", minWidth: 0 }}
                           />
-                          <IconButton sx={{ color: "#336B3F" }}>
-                            <EmojiEmotionsOutlinedIcon />
+                          <IconButton sx={{ color: "#336B3F", padding: { xs: "4px", sm: "8px" } }}>
+                            <EmojiEmotionsOutlinedIcon sx={{ fontSize: { xs: "18px", sm: "24px" } }} />
                           </IconButton>
                         </Box>
                         <IconButton
                           onClick={handleSendChatMessage}
-                          sx={{ backgroundColor: "#336B3F", color: "#C9F8BA", "&:hover": { backgroundColor: "#285230" } }}
+                          sx={{ backgroundColor: "#336B3F", color: "#C9F8BA", "&:hover": { backgroundColor: "#285230" }, padding: { xs: "6px", sm: "8px" } }}
                         >
-                          <SendRoundedIcon />
+                          <SendRoundedIcon sx={{ fontSize: { xs: "18px", sm: "24px" } }} />
                         </IconButton>
                       </Box>
                     </Box>
                   )}
 
                   {supportView === "call" && (
-                    <Box sx={{ backgroundColor: "#2F6B3C", borderRadius: "28px", p: 4, color: "#C9F8BA" }}>
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 3, gap: 2 }}>
+                    <Box sx={{ backgroundColor: "#2F6B3C", borderRadius: { xs: "20px", sm: "24px", md: "28px" }, p: { xs: 2.5, sm: 3, md: 4 }, color: "#C9F8BA" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", mb: { xs: 2, sm: 2.5, md: 3 }, gap: 2 }}>
                         <IconButton onClick={() => setSupportView("menu")} sx={{ color: "#C9F8BA" }}>
                           <ArrowBackIosNewOutlinedIcon fontSize="small" />
                         </IconButton>
-                        <Typography variant="h5" sx={{ fontWeight: "bold" }}>Call Center</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: "bold", fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.75rem" } }}>Call Center</Typography>
                       </Box>
-                      <Typography variant="body1" sx={{ mb: 2 }}>
+                      <Typography variant="body1" sx={{ mb: 2, fontSize: { xs: "0.875rem", sm: "0.95rem", md: "1rem" } }}>
                         Speak directly with our specialists for instant resolution.
                       </Typography>
-                      <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap" }}>
+                      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2, mb: { xs: 2, sm: 2.5, md: 3 }, "& > button": { width: { xs: "100%", sm: "auto" } } }}>
                         <Button size="large" style={{ backgroundColor: "#C9F8BA", color: "#336B3F", borderRadius: "16px", fontWeight: "bold" }}>
                           Call Now
                         </Button>
@@ -624,23 +672,23 @@ const EditProfile = () => {
                   )}
 
                   {supportView === "faq" && (
-                    <Box sx={{ backgroundColor: "#2F6B3C", borderRadius: "28px", p: 4, color: "#C9F8BA" }}>
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 3, gap: 2 }}>
+                    <Box sx={{ backgroundColor: "#2F6B3C", borderRadius: { xs: "20px", sm: "24px", md: "28px" }, p: { xs: 2.5, sm: 3, md: 4 }, color: "#C9F8BA" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", mb: { xs: 2, sm: 2.5, md: 3 }, gap: 2 }}>
                         <IconButton onClick={() => setSupportView("menu")} sx={{ color: "#C9F8BA" }}>
                           <ArrowBackIosNewOutlinedIcon fontSize="small" />
                         </IconButton>
-                        <Typography variant="h5" sx={{ fontWeight: "bold" }}>Frequently Asked Questions</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: "bold", fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.75rem" } }}>Frequently Asked Questions</Typography>
                       </Box>
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 1.5, sm: 2 } }}>
                         {[
                           { q: "How do I reschedule my pickup?", a: "Go to Orders > Select order > Reschedule." },
                           { q: "Where can I track my order?", a: "Open Order History and tap on the order status card." },
                           { q: "How do I update my payment method?", a: "Navigate to Profile > Payment Method > Add card." },
                           { q: "Do you offer express service?", a: "Yes, choose Express at checkout for next-day delivery." },
                         ].map((faq) => (
-                          <Box key={faq.q} sx={{ backgroundColor: "rgba(201,248,186,0.1)", borderRadius: "20px", p: 3 }}>
-                            <Typography sx={{ fontWeight: "bold", mb: 1 }}>{faq.q}</Typography>
-                            <Typography sx={{ opacity: 0.8 }}>{faq.a}</Typography>
+                          <Box key={faq.q} sx={{ backgroundColor: "rgba(201,248,186,0.1)", borderRadius: { xs: "16px", sm: "20px" }, p: { xs: 2, sm: 2.5, md: 3 } }}>
+                            <Typography sx={{ fontWeight: "bold", mb: 1, fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" } }}>{faq.q}</Typography>
+                            <Typography sx={{ opacity: 0.8, fontSize: { xs: "0.8rem", sm: "0.875rem", md: "0.95rem" } }}>{faq.a}</Typography>
                           </Box>
                         ))}
                       </Box>
@@ -650,10 +698,10 @@ const EditProfile = () => {
               )}
               {showPaymentCardForm && (
                 <Box>
-                  <Card sx={{ backgroundColor: "rgba(201, 248, 186, 1)", borderRadius: "16px" }}>
-                    <CardContent>
-                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#336B3F" }}>My Cards</Typography>
+                  <Card sx={{ backgroundColor: "rgba(201, 248, 186, 1)", borderRadius: { xs: "12px", sm: "16px" } }}>
+                    <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
+                      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: { xs: 2, sm: 0 }, mb: 2 }}>
+                        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#336B3F", fontSize: { xs: "1.1rem", sm: "1.25rem", md: "1.5rem" } }}>My Cards</Typography>
                         <Button
                           onClick={() => handlePaymentMethodDialogOpen()}
                           type="button"
@@ -670,7 +718,7 @@ const EditProfile = () => {
                             padding: "6px 12px"
                           }}
                         >
-                          <AddIcon sx={{ fontSize: 18 }} />
+                          <AddIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
                           Add New
                         </Button>
                       </Box>
@@ -682,20 +730,20 @@ const EditProfile = () => {
                           </Typography>
                         ) : (
                           savedCards.map((card) => (
-                            <Box
-                              key={card.id}
-                              sx={{
-                                background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7b4397 100%)",
-                                borderRadius: "16px",
-                                padding: "24px",
-                                color: "white",
-                                position: "relative",
-                                minHeight: "200px",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between",
-                              }}
-                            >
+                              <Box
+                                key={card.id}
+                                sx={{
+                                  background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7b4397 100%)",
+                                  borderRadius: { xs: "12px", sm: "16px" },
+                                  padding: { xs: "16px", sm: "20px", md: "24px" },
+                                  color: "white",
+                                  position: "relative",
+                                  minHeight: { xs: "180px", sm: "200px" },
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
+                                }}
+                              >
                               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                 <Box sx={{ display: "flex", gap: 1 }}>
                                   <Box
@@ -783,10 +831,10 @@ const EditProfile = () => {
 
               {showLocationCard && (
                 <Box>
-                  <Card sx={{ backgroundColor: "rgba(201, 248, 186, 1)", borderRadius: "16px" }}>
-                    <CardContent>
-                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#336B3F" }}>My Locations</Typography>
+                  <Card sx={{ backgroundColor: "rgba(201, 248, 186, 1)", borderRadius: { xs: "12px", sm: "16px" } }}>
+                    <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
+                      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: { xs: 2, sm: 0 }, mb: 2 }}>
+                        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#336B3F", fontSize: { xs: "1.1rem", sm: "1.25rem", md: "1.5rem" } }}>My Locations</Typography>
                         <Button
                           onClick={() => setLocationDialogOpen(true)}
                           type="button"
@@ -803,7 +851,7 @@ const EditProfile = () => {
                             padding: "6px 12px"
                           }}
                         >
-                          <AddIcon sx={{ fontSize: 18 }} />
+                          <AddIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
                           Add New
                         </Button>
                       </Box>
@@ -836,25 +884,25 @@ const EditProfile = () => {
                                   alt={location.address}
                                   sx={{
                                     width: "100%",
-                                    height: "150px",
+                                    height: { xs: "120px", sm: "140px", md: "150px" },
                                     objectFit: "cover",
-                                    borderTopLeftRadius: "12px",
-                                    borderTopRightRadius: "12px",
+                                    borderTopLeftRadius: { xs: "8px", sm: "12px" },
+                                    borderTopRightRadius: { xs: "8px", sm: "12px" },
                                   }}
                                 />
 
                                 {/* Address Details */}
-                                <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2, p: 2 }}>
-                                  <LocationOnIcon sx={{ color: "#336B3F", fontSize: 28, mt: 0.5 }} />
+                                <Box sx={{ display: "flex", alignItems: "flex-start", gap: { xs: 1.5, sm: 2 }, p: { xs: 1.5, sm: 2 } }}>
+                                  <LocationOnIcon sx={{ color: "#336B3F", fontSize: { xs: 24, sm: 26, md: 28 }, mt: 0.5 }} />
                                   <Box sx={{ flex: 1 }}>
-                                    <Typography variant="h6" sx={{ color: "#336B3F", fontWeight: "bold", mb: 1 }}>
+                                    <Typography variant="h6" sx={{ color: "#336B3F", fontWeight: "bold", mb: 1, fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" } }}>
                                       {location.address}
                                     </Typography>
-                                    <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
-                                      <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)" }}>
+                                    <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: { xs: 0.5, sm: 2 }, mt: 1 }}>
+                                      <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", fontSize: { xs: "0.8rem", sm: "0.875rem" } }}>
                                         <strong>Zip Code:</strong> {location.zipCode}
                                       </Typography>
-                                      <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)" }}>
+                                      <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", fontSize: { xs: "0.8rem", sm: "0.875rem" } }}>
                                         <strong>State:</strong> {indianStates.find(s => s.value === location.state)?.label || location.state}
                                       </Typography>
                                     </Box>

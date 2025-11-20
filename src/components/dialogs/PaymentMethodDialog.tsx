@@ -42,9 +42,9 @@ const PaymentMethodDialog: React.FC<PaymentMethodDialogProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (activeTab === "card") {
-      if (onAddCard) {
+      if (onAddCard && cardNumber && cardHolderName && expiryDate && cvv) {
         const newCard: CardData = {
-          id: Date.now().toString(),
+          id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           cardNumber,
           cardHolderName,
           expiryDate,
@@ -105,39 +105,40 @@ const PaymentMethodDialog: React.FC<PaymentMethodDialogProps> = ({
       PaperProps={{
         sx: {
           backgroundColor: "rgba(201, 248, 186, 1)",
-          borderRadius: "28px",
+          borderRadius: { xs: "20px", sm: "24px", md: "28px" },
+          margin: { xs: 1, sm: 2 },
         }
       }}
     >
-      <DialogTitle sx={{ color: "#336B3F", fontWeight: "bold", fontSize: "1.5rem" }}>
+      <DialogTitle sx={{ color: "#336B3F", fontWeight: "bold", fontSize: { xs: "1.25rem", sm: "1.4rem", md: "1.5rem" }, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 2.5, md: 3 } }}>
         Payment Methods
-        <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8, color: "#336B3F", }}>
-          <CloseIcon />
+        <IconButton onClick={onClose} sx={{ position: "absolute", right: { xs: 4, sm: 8 }, top: { xs: 4, sm: 8 }, color: "#336B3F", }}>
+          <CloseIcon sx={{ fontSize: { xs: "20px", sm: "24px" } }} />
         </IconButton>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ px: { xs: 2, sm: 3 }, pb: { xs: 2, sm: 3 } }}>
         <Tabs
           value={activeTab}
           onChange={(_, newValue) => setActiveTab(newValue)}
           sx={{
-            "& .MuiTab-root": { color: "#336B3F", fontWeight: "bold" },
+            "& .MuiTab-root": { color: "#336B3F", fontWeight: "bold", fontSize: { xs: "0.875rem", sm: "1rem" } },
             "& .Mui-selected": { color: "#336B3F !important" },
-            mb: 2,
+            mb: { xs: 1.5, sm: 2 },
           }}
         >
           <Tab label="Credit Card" value="card" />
           <Tab label="PayPal" value="paypal" />
         </Tabs>
         {activeTab === "card" ? (
-          <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", mb: 3 }}>
+          <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", mb: { xs: 2, sm: 2.5, md: 3 }, fontSize: { xs: "0.8rem", sm: "0.875rem", md: "0.95rem" } }}>
             Add credit & debit cards
           </Typography>
         ) : (
-          <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", mb: 3 }}>
+          <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", mb: { xs: 2, sm: 2.5, md: 3 }, fontSize: { xs: "0.8rem", sm: "0.875rem", md: "0.95rem" } }}>
             Link your PayPal account for faster checkout
           </Typography>
         )}
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 2.5, md: 3 } }}>
           {activeTab === "card" ? (
             <>
               <TextFieldComponent
@@ -159,7 +160,7 @@ const PaymentMethodDialog: React.FC<PaymentMethodDialogProps> = ({
                 textColor="#336B3F"
                 required 
               />
-              <Box sx={{ display: "flex", gap: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: { xs: 2, sm: 2 } }}>
                 <TextFieldComponent 
                   label="Expiry Date" 
                   value={expiryDate} 

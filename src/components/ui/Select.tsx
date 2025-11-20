@@ -10,7 +10,7 @@ interface SelectProps {
   label?: string;
   options: SelectOption[];
   value?: string;
-  onChange?: (e: React.ChangeEvent<{ value: unknown }>) => void;
+  onChange?: (e: any) => void;
   placeholder?: string;
   error?: string;
   disabled?: boolean;
@@ -42,34 +42,37 @@ const Select: React.FC<SelectProps> = ({
       error={Boolean(error)}
       sx={{
         "& .MuiInputLabel-root": {
-          color: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#C9F8BA",
+          color: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#336B3F",
+          fontSize: { xs: "0.875rem", sm: "1rem" },
           "&.Mui-focused": {
-            color: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#C9F8BA",
+            color: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#336B3F",
           },
         },
         "& .MuiOutlinedInput-root": {
           borderRadius: "14px",
           backgroundColor: "transparent !important",
           background: "none !important",
+          fontSize: { xs: "0.875rem", sm: "1rem" },
           "& fieldset": { 
-            borderColor: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#C9F8BA",
+            borderColor: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#336B3F",
             borderWidth: "2px",
           },
           "&:hover fieldset": { 
-            borderColor: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#C9F8BA",
+            borderColor: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#336B3F",
             borderWidth: "2px",
           },
           "&.Mui-focused fieldset": { 
-            borderColor: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#C9F8BA",
+            borderColor: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#336B3F",
             borderWidth: "2px",
           },
         },
         "& .MuiSelect-select": {
-          color: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#C9F8BA",
+          color: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#336B3F",
           backgroundColor: "transparent !important",
+          padding: { xs: "12px 14px", sm: "14px 16px" },
         },
         "& .MuiSvgIcon-root": {
-          color: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#C9F8BA",
+          color: isDark ? "rgba(250, 199, 199, 1)" : variant === 'dialog' ? "#336B3F" : "#336B3F",
         },
       }}
     >
@@ -79,7 +82,7 @@ const Select: React.FC<SelectProps> = ({
         label={label}
         value={value || ""}
         name={name}
-        onChange={onChange as any}
+        onChange={onChange}
         disabled={disabled}
       >
         {placeholder && (

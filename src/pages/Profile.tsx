@@ -31,10 +31,10 @@ const Profile: React.FC = () => {
 
   return (
     <Box className="profile-page">
-      <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
-        <Paper elevation={0} sx={{ p: { xs: 3, md: 4 }, borderRadius: '16px' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#336B3F' }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 5 }, px: { xs: 1, sm: 2, md: 3 } }}>
+        <Paper elevation={0} sx={{ p: { xs: 2, sm: 2.5, md: 4 }, borderRadius: { xs: '12px', sm: '16px' } }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: { xs: 2, sm: 0 }, mb: { xs: 3, sm: 3.5, md: 4 } }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#336B3F', fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' } }}>
               My Profile
             </Typography>
             {!isEditing ? (
@@ -47,6 +47,7 @@ const Profile: React.FC = () => {
                   color: 'white',
                   textTransform: 'none',
                   borderRadius: '8px',
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
                   '&:hover': {
                     backgroundColor: '#285C34',
                   },
@@ -55,15 +56,17 @@ const Profile: React.FC = () => {
                 Edit Profile
               </Button>
             ) : (
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1.5, sm: 2 }, width: { xs: '100%', sm: 'auto' } }}>
                 <Button
                   variant="outlined"
                   onClick={handleCancel}
+                  fullWidth={xs}
                   sx={{
                     borderColor: '#336B3F',
                     color: '#336B3F',
                     textTransform: 'none',
                     borderRadius: '8px',
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
                   }}
                 >
                   Cancel
@@ -71,11 +74,13 @@ const Profile: React.FC = () => {
                 <Button
                   variant="contained"
                   onClick={handleSave}
+                  fullWidth={xs}
                   sx={{
                     backgroundColor: '#336B3F',
                     color: 'white',
                     textTransform: 'none',
                     borderRadius: '8px',
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
                     '&:hover': {
                       backgroundColor: '#285C34',
                     },
@@ -87,41 +92,41 @@ const Profile: React.FC = () => {
             )}
           </Box>
 
-          <Grid container spacing={4}>
+          <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
             <Grid item xs={12} md={4}>
               <Box sx={{ textAlign: 'center' }}>
                 <Avatar
                   sx={{
-                    width: { xs: 100, md: 150 },
-                    height: { xs: 100, md: 150 },
+                    width: { xs: 80, sm: 100, md: 150 },
+                    height: { xs: 80, sm: 100, md: 150 },
                     mx: 'auto',
-                    mb: 2,
+                    mb: { xs: 1.5, sm: 2 },
                     bgcolor: '#336B3F',
-                    fontSize: { xs: '3rem', md: '4rem' },
+                    fontSize: { xs: '2.5rem', sm: '3rem', md: '4rem' },
                   }}
                 >
                   {profileData.firstName[0]}{profileData.lastName[0]}
                 </Avatar>
-                <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>
                   {profileData.firstName} {profileData.lastName}
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#666' }}>
+                <Typography variant="body2" sx={{ color: '#666', fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1rem' } }}>
                   {profileData.email}
                 </Typography>
               </Box>
             </Grid>
 
             <Grid item xs={12} md={8}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 2.5, md: 3 } }}>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Person sx={{ color: '#336B3F', mr: 1 }} />
-                    <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600 }}>
+                    <Person sx={{ color: '#336B3F', mr: 1, fontSize: { xs: '20px', sm: '24px' } }} />
+                    <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600, fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } }}>
                       Personal Information
                     </Typography>
                   </Box>
-                  <Divider sx={{ mb: 2 }} />
-                  <Grid container spacing={2}>
+                  <Divider sx={{ mb: { xs: 1.5, sm: 2 } }} />
+                  <Grid container spacing={{ xs: 1.5, sm: 2 }}>
                     <Grid item xs={12} sm={6}>
                       {isEditing ? (
                         <TextFieldComponent
@@ -130,7 +135,7 @@ const Profile: React.FC = () => {
                           onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
                         />
                       ) : (
-                        <Typography variant="body1">{profileData.firstName}</Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.firstName}</Typography>
                       )}
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -141,7 +146,7 @@ const Profile: React.FC = () => {
                           onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
                         />
                       ) : (
-                        <Typography variant="body1">{profileData.lastName}</Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.lastName}</Typography>
                       )}
                     </Grid>
                   </Grid>
@@ -149,13 +154,13 @@ const Profile: React.FC = () => {
 
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Email sx={{ color: '#336B3F', mr: 1 }} />
-                    <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600 }}>
+                    <Email sx={{ color: '#336B3F', mr: 1, fontSize: { xs: '20px', sm: '24px' } }} />
+                    <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600, fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } }}>
                       Contact Information
                     </Typography>
                   </Box>
-                  <Divider sx={{ mb: 2 }} />
-                  <Grid container spacing={2}>
+                  <Divider sx={{ mb: { xs: 1.5, sm: 2 } }} />
+                  <Grid container spacing={{ xs: 1.5, sm: 2 }}>
                     <Grid item xs={12}>
                       {isEditing ? (
                         <TextFieldComponent
@@ -165,7 +170,7 @@ const Profile: React.FC = () => {
                           onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                         />
                       ) : (
-                        <Typography variant="body1">{profileData.email}</Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.email}</Typography>
                       )}
                     </Grid>
                     <Grid item xs={12}>
@@ -177,7 +182,7 @@ const Profile: React.FC = () => {
                           onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                         />
                       ) : (
-                        <Typography variant="body1">{profileData.phone}</Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.phone}</Typography>
                       )}
                     </Grid>
                   </Grid>
@@ -185,13 +190,13 @@ const Profile: React.FC = () => {
 
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <LocationOn sx={{ color: '#336B3F', mr: 1 }} />
-                    <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600 }}>
+                    <LocationOn sx={{ color: '#336B3F', mr: 1, fontSize: { xs: '20px', sm: '24px' } }} />
+                    <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600, fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } }}>
                       Address
                     </Typography>
                   </Box>
-                  <Divider sx={{ mb: 2 }} />
-                  <Grid container spacing={2}>
+                  <Divider sx={{ mb: { xs: 1.5, sm: 2 } }} />
+                  <Grid container spacing={{ xs: 1.5, sm: 2 }}>
                     <Grid item xs={12}>
                       {isEditing ? (
                         <TextFieldComponent
@@ -200,7 +205,7 @@ const Profile: React.FC = () => {
                           onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
                         />
                       ) : (
-                        <Typography variant="body1">{profileData.address}</Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.address}</Typography>
                       )}
                     </Grid>
                     <Grid item xs={12}>
@@ -211,7 +216,7 @@ const Profile: React.FC = () => {
                           onChange={(e) => setProfileData({ ...profileData, city: e.target.value })}
                         />
                       ) : (
-                        <Typography variant="body1">{profileData.city}</Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.city}</Typography>
                       )}
                     </Grid>
                   </Grid>
@@ -219,13 +224,13 @@ const Profile: React.FC = () => {
 
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Settings sx={{ color: '#336B3F', mr: 1 }} />
-                    <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600 }}>
+                    <Settings sx={{ color: '#336B3F', mr: 1, fontSize: { xs: '20px', sm: '24px' } }} />
+                    <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600, fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } }}>
                       Preferences
                     </Typography>
                   </Box>
-                  <Divider sx={{ mb: 2 }} />
-                  <Typography variant="body1">Preferred Service: {profileData.preferredService}</Typography>
+                  <Divider sx={{ mb: { xs: 1.5, sm: 2 } }} />
+                  <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>Preferred Service: {profileData.preferredService}</Typography>
                 </Box>
               </Box>
             </Grid>

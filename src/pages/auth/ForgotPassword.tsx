@@ -28,30 +28,38 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <Box className="auth-page">
-      <Container maxWidth="sm">
-        <Box className="auth-panel">
+    <Box className="auth-page" sx={{ minHeight: "100vh", backgroundColor: "#336B3F", display: "flex", alignItems: "center", justifyContent: "center", p: { xs: 1, sm: 2 } }}>
+      <Container maxWidth="sm" sx={{ width: "100%", px: { xs: 1, sm: 2 } }}>
+        <Box className="auth-panel" sx={{ 
+          backgroundColor: "rgba(201, 248, 186, 1)", 
+          borderRadius: { xs: "20px", sm: "24px" }, 
+          padding: { xs: "24px 20px", sm: "32px 28px", md: "40px" }, 
+          width: "100%", 
+          maxWidth: "500px", 
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)" 
+        }}>
           <Button
             startIcon={<ArrowBack />}
             onClick={() => navigate('/signin')}
             sx={{ 
-              mb: 3, 
+              mb: { xs: 2, sm: 3 }, 
               color: '#336B3F', 
               textTransform: 'none',
+              fontSize: { xs: "0.875rem", sm: "1rem" },
               '&:hover': { backgroundColor: 'rgba(51, 107, 63, 0.1)' }
             }}
           >
             Back to Sign In
           </Button>
 
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Box sx={{ textAlign: 'center', mb: { xs: 3, sm: 4 } }}>
             <Typography 
               variant="h4" 
               sx={{ 
                 fontWeight: 700, 
                 color: '#336B3F', 
                 mb: 1,
-                fontSize: { xs: '1.5rem', md: '2rem' }
+                fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }
               }}
             >
               Forgot Password?
@@ -61,14 +69,15 @@ const ForgotPassword: React.FC = () => {
               sx={{ 
                 color: '#336B3F', 
                 opacity: 0.8,
-                fontSize: { xs: '0.875rem', md: '1rem' }
+                fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1rem' },
+                px: { xs: 1, sm: 0 }
               }}
             >
               No worries! Enter your email address and we'll send you a link to reset your password.
             </Typography>
           </Box>
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2.5, sm: 3 } }}>
             <TextFieldComponent
               label="Email Address"
               type="email"
@@ -89,8 +98,8 @@ const ForgotPassword: React.FC = () => {
               sx={{
                 backgroundColor: '#336B3F',
                 color: 'white',
-                py: 1.5,
-                fontSize: '1rem',
+                py: { xs: 1.25, sm: 1.5 },
+                fontSize: { xs: '0.9rem', sm: '1rem' },
                 textTransform: 'none',
                 borderRadius: '8px',
                 fontWeight: 600,
@@ -102,7 +111,7 @@ const ForgotPassword: React.FC = () => {
               Send Reset Link
             </Button>
 
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Box sx={{ textAlign: 'center', mt: { xs: 1.5, sm: 2 } }}>
               <Link
                 to="/signin"
                 style={{

@@ -112,9 +112,9 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onAddLocation) {
+    if (onAddLocation && address && zipCode && state) {
       const newLocation: LocationData = {
-        id: Date.now().toString(),
+        id: `location-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         address,
         zipCode,
         state,
@@ -137,18 +137,19 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
       PaperProps={{
         sx: {
           backgroundColor: "rgba(201, 248, 186, 1)",
-          borderRadius: "28px",
+          borderRadius: { xs: "20px", sm: "24px", md: "28px" },
+          margin: { xs: 1, sm: 2 },
         }
       }}
     >
-      <DialogTitle sx={{ color: "#336B3F", fontWeight: "bold", fontSize: "1.5rem" }}>
+      <DialogTitle sx={{ color: "#336B3F", fontWeight: "bold", fontSize: { xs: "1.25rem", sm: "1.4rem", md: "1.5rem" }, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 2.5, md: 3 } }}>
         Add Location
-        <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8, color: "#336B3F", }}>
-          <CloseIcon />
+        <IconButton onClick={onClose} sx={{ position: "absolute", right: { xs: 4, sm: 8 }, top: { xs: 4, sm: 8 }, color: "#336B3F", }}>
+          <CloseIcon sx={{ fontSize: { xs: "20px", sm: "24px" } }} />
         </IconButton>
       </DialogTitle>
-      <DialogContent>
-        <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", mb: 3, }}>
+      <DialogContent sx={{ px: { xs: 2, sm: 3 }, pb: { xs: 2, sm: 3 } }}>
+        <Typography variant="body2" sx={{ color: "rgba(51, 107, 63, 0.7)", mb: { xs: 2, sm: 2.5, md: 3 }, fontSize: { xs: "0.8rem", sm: "0.875rem", md: "0.95rem" } }}>
           Add home & work locations
         </Typography>
         {loadError && (
@@ -165,7 +166,7 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
             </Typography>
           </Box>
         )}
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 2.5, md: 3 } }}>
           <Box>
             {apiKey && isLoaded ? (
               <Autocomplete
@@ -209,7 +210,7 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
             )}
 
           </Box>
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: { xs: 2, sm: 2 } }}>
             <Box sx={{ flex: 1 }}>
               <TextFieldComponent
                 label="Zip Code"
