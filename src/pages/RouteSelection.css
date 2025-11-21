@@ -8,12 +8,27 @@
     overflow: hidden;
     box-shadow: none;
     background: #f3f3f3; /* light background behind tiles to look like the rounded white panel */
+    position: relative;
+  }
+  
+  .map-card > div {
+    position: relative !important;
+    width: 100% !important;
+    height: 580px !important;
+    min-height: 580px !important;
+  }
+  
+  /* Ensure Google Maps iframe is visible */
+  .map-card iframe {
+    border-radius: 24px;
+    width: 100% !important;
+    height: 100% !important;
   }
   
   /* top center date/time */
   .center-datetime {
     position: absolute;
-    top: 18px;
+    top: 8rem;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
