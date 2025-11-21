@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardNavbar from "../components/DashboardNavbar";
 import {
     Box,
@@ -12,15 +13,16 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import StarIcon from "@mui/icons-material/Star";
 import cartimg from "../../src/assets/1ec7ed57120be5a76dab177938cb26bb22971505.jpg";
+import DateTimeDialog from "../components/dialogs/DateTimeDialog";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 const Cart = () => {
+    const navigate = useNavigate();
     const [items, setItems] = useState([
         { id: 1, name: "Shirts", price: 20, rating: 4.5, img: cartimg, qty: 1 },
         { id: 2, name: "Shirts", price: 20, rating: 4.5, img: cartimg, qty: 1 },
         { id: 3, name: "Shirts", price: 20, rating: 4.5, img: cartimg, qty: 1 },
     ]);
-    const [open, setOpen] = useState(false);
+    const [openDateTimeDialog, setOpenDateTimeDialog] = useState(false);
 
     // Increase quantity
     const increaseQty = (id: number) => {
@@ -45,8 +47,17 @@ const Cart = () => {
     // Total Bill
     const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleOpenDateTimeDialog = () => setOpenDateTimeDialog(true);
+    const handleCloseDateTimeDialog = () => setOpenDateTimeDialog(false);
+
+    const handleDateTimeContinue = (date: Date, time: string, instructions: string) => {
+        // Store date, time, and instructions in sessionStorage or state management
+        sessionStorage.setItem("selectedDate", date.toISOString());
+        sessionStorage.setItem("selectedTime", time);
+        sessionStorage.setItem("specialInstructions", instructions);
+        // Navigate to route selection page
+        navigate("/route-selection");
+    };
 
     return (
         <Box sx={{ background: "#336B3F", minHeight: "100vh" }}>
@@ -188,7 +199,7 @@ const Cart = () => {
 
                             <Button
                                 fullWidth
-                                onClick={handleOpen}
+                                onClick={handleOpenDateTimeDialog}
                                 sx={{
                                     background: "#d6ffcd",
                                     color: "#000",
@@ -205,6 +216,12 @@ const Cart = () => {
                     </div>
                 </div>
             </div>
+
+            <DateTimeDialog
+                open={openDateTimeDialog}
+                onClose={handleCloseDateTimeDialog}
+                onContinue={handleDateTimeContinue}
+            />
         </Box>
     );
 };

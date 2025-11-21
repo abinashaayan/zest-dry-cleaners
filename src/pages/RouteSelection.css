@@ -1,0 +1,124 @@
+/* RouteSelection.css - minimal custom styling to match Figma visuals */
+
+.map-card {
+    width: 100%;
+    max-width: 1400px;
+    height: 580px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: none;
+    background: #f3f3f3; /* light background behind tiles to look like the rounded white panel */
+  }
+  
+  /* top center date/time */
+  .center-datetime {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 1200;
+    pointer-events: none;
+  }
+  
+  .day-text {
+    color: #336B3F;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+  
+  .date-text {
+    color: #336B3F;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  
+  .time-text {
+    color: #336B3F;
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+  
+  /* design static yellow marker */
+  .design-static-marker {
+    position: absolute;
+    top: 36%;
+    right: 20%;
+    z-index: 1200;
+    transform: translate(0, -20%);
+    pointer-events: none;
+  }
+  
+  /* Address card - positioned on map */
+  .address-card {
+    position: absolute;
+    bottom: 178px;
+    left: 237px;
+    right: auto;
+    width: 540px;
+    max-width: 92%;
+    z-index: 1200;
+  }
+
+  /* recenter button - positioned on map */
+  .recenter-btn {
+    position: absolute;
+    bottom: 168px;
+    right: 281px;
+    z-index: 1200;
+  }
+  
+  /* small responsive adjustments */
+  @media (min-width: 900px) {
+    .address-card {
+      left: 237px;
+      right: auto;
+    }
+  }
+
+  @media (min-width: 600px) {
+    .address-card {
+      width: 540px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .map-card {
+      height: 520px;
+    }
+    .design-static-marker {
+      right: 12%;
+      top: 34%;
+    }
+    .recenter-btn {
+      right: 20px;
+      bottom: 40px;
+    }
+    .address-card {
+      left: 12px;
+      right: 12px;
+      bottom: 28px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .map-card {
+      height: 520px;
+    }
+    .center-datetime {
+      top: 12px;
+    }
+    .address-card {
+      width: auto;
+      left: 12px;
+      right: 12px;
+    }
+  }
+
+  /* Custom yellow marker styling */
+  .custom-yellow-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+  

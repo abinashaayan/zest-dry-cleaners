@@ -177,25 +177,25 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
                   componentRestrictions: { country: "in" },
                 }}
               >
-                 <input
-                   type="text"
-                   value={address}
-                   onChange={(e) => setAddress(e.target.value)}
-                   placeholder="Enter address"
-                   style={{
-                     width: "100%",
-                     height: "56px",
-                     padding: "0 14px",
-                     fontSize: "16px",
-                     borderRadius: "14px",
-                     border: "2px solid #336B3F",
-                     backgroundColor: "transparent",
-                     color: "#336B3F",
-                     outline: "none",
-                     fontFamily: "inherit",
-                   }}
-                   required
-                 />
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter address"
+                  style={{
+                    width: "100%",
+                    height: "56px",
+                    padding: "0 14px",
+                    fontSize: "16px",
+                    borderRadius: "14px",
+                    border: "2px solid #336B3F",
+                    backgroundColor: "transparent",
+                    color: "#336B3F",
+                    outline: "none",
+                    fontFamily: "inherit",
+                  }}
+                  required
+                />
               </Autocomplete>
             ) : (
               <TextFieldComponent
@@ -223,7 +223,7 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
               />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Select
+              {/* <Select
                 label="State"
                 options={indianStates}
                 value={state}
@@ -231,7 +231,22 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
                 placeholder="Select State"
                 variant="dialog"
                 required
-              />
+              /> */}
+              <Box sx={{ flex: 1 }}>
+                <Select
+                  label="State"
+                  value={state}
+                  onChange={(e) => setState(e.target.value as string)}
+                  placeholder="Select State"
+                  variant="dialog"
+                  required
+                  options={[
+                    { label: "Maharashtra", value: "Maharashtra" },
+                    { label: "Uttar Pradesh", value: "Uttar Pradesh" },
+                  ]}
+                />
+              </Box>
+
             </Box>
           </Box>
           <Button type="submit" variant="primary" size="large" style={{ backgroundColor: "#336B3F", color: "white", borderRadius: "12px", fontWeight: "bold", marginTop: 2, }}>
