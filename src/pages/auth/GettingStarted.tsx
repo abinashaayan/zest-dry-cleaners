@@ -195,30 +195,6 @@ const GettingStarted: React.FC = () => {
         setLoading(false);
         return;
       }
-      // const submitFormData = new FormData();
-      // submitFormData.append("fullName", formData.fullName);
-      // submitFormData.append("email", formData.email);
-      // submitFormData.append("phoneNumber", nationalPhoneNumber);
-      // submitFormData.append("password", formData.password);
-      // submitFormData.append("city", formData.city);
-      // submitFormData.append("state", formData.state);
-      // submitFormData.append("zipCode", formData.zipCode);
-      // submitFormData.append("houseNumber", formData.houseNumber);
-      // submitFormData.append("streetName", formData.streetName);
-      // submitFormData.append("area", formData.area);
-      // submitFormData.append("landmark", formData.landmark);
-      // submitFormData.append("addressType", formData.addressType);
-      // if (formData.profileImage) {
-      //   submitFormData.append("profileImage", formData.profileImage);
-      // }
-      // navigator.geolocation.getCurrentPosition(
-      //   (position) => {
-      //     const { latitude, longitude } = position.coords;
-      //     submitFormData.append("latitude", latitude.toString());
-      //     submitFormData.append("longitude", longitude.toString());
-      //   },
-      //   (err) => console.error(err)
-      // );
       const submitFormData = new FormData();
       Object.entries({
         fullName: formData.fullName,

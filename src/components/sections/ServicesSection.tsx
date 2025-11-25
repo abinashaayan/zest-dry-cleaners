@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import './ServicesSection.css';
@@ -7,52 +7,82 @@ import casualshirt from '../../assets/casual-t-shirt- 1.png';
 import Group from '../../assets/Group.png';
 import blanket from '../../assets/blanket 1.png';
 import curtains from '../../assets/curtains 1.png';
-import { Container } from '@mui/material';
+import { CircularProgress, Container } from '@mui/material';
+import { getAllCategoryServices } from '../../utils/auth';
 
 interface Service {
   id: number;
   name: string;
-  icon: string; // image URL
+  icon: string;
   iconBgColor: string;
   iconColor: string;
   bgColor: string;
 }
 
+const staticServices: Service[] = [
+  {
+    icon: casualshirt,
+    iconBgColor: '#FAC7C7',
+    bgColor: '#FCE9E9',
+    iconColor: '#f44336',
+    id: 0,
+    name: ''
+  },
+  {
+    icon: Group,
+    iconBgColor: '#BCFFC9',
+    bgColor: '#F0FAF2',
+    iconColor: '#2d8659',
+    id: 0,
+    name: ''
+  },
+  {
+    icon: blanket,
+    iconBgColor: '#CBF0FB',
+    bgColor: '#E8F7FC',
+    iconColor: '#2196f3',
+    id: 0,
+    name: ''
+  },
+  {
+    icon: curtains,
+    iconBgColor: '#FBCBEF',
+    bgColor: '#FCE8F5',
+    iconColor: '#e91e63',
+    id: 0,
+    name: ''
+  },
+];
+
 const ServicesSection: React.FC = () => {
-  const services: Service[] = [
-    {
-      id: 1,
-      name: 'Shirts',
-      icon: casualshirt,
-      iconBgColor: '#FAC7C7',
-      bgColor: '#FCE9E9',
-      iconColor: '#f44336',
-    },
-    {
-      id: 2,
-      name: 'Suits',
-      icon: Group,
-      iconBgColor: '#BCFFC9',
-      bgColor: '#F0FAF2',
-      iconColor: '#2d8659',
-    },
-    {
-      id: 3,
-      name: 'Bedsheets',
-      icon: blanket,
-      iconBgColor: '#CBF0FB',
-      bgColor: '#E8F7FC',
-      iconColor: '#2196f3',
-    },
-    {
-      id: 4,
-      name: 'Curtains',
-      icon: curtains,
-      iconBgColor: '#FBCBEF',
-      bgColor: '#FCE8F5',
-      iconColor: '#e91e63',
-    },
-  ];
+  const [services, setServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const navigate = useNavigate();
+
+  const fetchCategoryServices = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllCategoryServices();
+      const categories = data?.categories || [];
+      const mergedServices = categories.map((cat: any, index: number) => ({
+        ...cat,
+        ...staticServices[index % staticServices.length],
+      }));
+      setServices(mergedServices);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch services');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchCategoryServices();
+  }, []);
+
+  const displayServices = services.slice(0, 4);
+  const totalCount = services.length;
 
   return (
     <section className="services-section">
@@ -62,22 +92,45 @@ const ServicesSection: React.FC = () => {
             <h2 className="services-section__title">Services</h2>
             <Link to="/services-list" style={{ textDecoration: 'none' }}>
               <Button variant="secondary" size="small" className="services-section__button rounded-pill">
-                See All Services
+                See All Services ({totalCount})
               </Button>
             </Link>
           </div>
-          <div className="services-section__grid">
-            {services?.map((service) => (
-              <Card key={service.id} className="services-section__card" backgroundColor={service.bgColor} >
-                <div className="services-section__icon-wrapper" style={{ backgroundColor: service.iconBgColor, }}>
-                  <div className="services-section__icon p-3" style={{ color: service.iconColor, }}>
-                    <img src={service.icon} alt="Service Icon" />
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: 40 }}>
+              <CircularProgress />
+            </div>
+          ) : error ? (
+            <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
+          ) : (
+            <div className="services-section__grid">
+              {displayServices?.map((service, idx) => (
+                <Card key={service?.id || idx} onClick={() => navigate(`/services/${service._id}`)}
+                  className="services-section__card" style={{ backgroundColor: service.bgColor }}>
+                  <div className="services-section__icon-wrapper" style={{ backgroundColor: service.iconBgColor }}>
+                    <div className="services-section__icon p-3" style={{ color: service.iconColor }}>
+                      {service?.profileImage ? (
+                        <img
+                          src={service.profileImage}
+                          alt={service.categoryName || 'Service Icon'}
+                          style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 30 }}
+                        />
+                      ) : (
+                        <img
+                          src={service.icon}
+                          alt={service.categoryName || 'Service Icon'}
+                          style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 30 }}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-                <h3 className="services-section__card-title">{service.name}</h3>
-              </Card>
-            ))}
-          </div>
+                  <h3 className="services-section__card-title">
+                    {service.categoryName || 'Unnamed Service'}
+                  </h3>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </Container>
     </section>

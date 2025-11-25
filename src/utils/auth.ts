@@ -26,22 +26,15 @@ export const login = async (email: string, password: string, role: string): Prom
     });
 
     const data = response.data;
-    
-    // Store access token in cookie
     if (data.accessToken) {
       setCookie('authToken', data.accessToken, 7);
     }
-    
-    // Store refresh token in cookie
     if (data.refreshToken) {
       setCookie('refreshToken', data.refreshToken, 30);
     }
-    
-    // Store user role from API response in cookie
     if (data.role) {
       setCookie('userRole', data.role, 7);
     }
-
     return data;
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || error.message || 'Login failed';
@@ -74,8 +67,6 @@ export const getUserRole = (): string | null => {
 
 export const logout = async (): Promise<void> => {
   const token = getAuthToken();
-  
-  // Call logout API if token exists
   if (token) {
     try {
       await axios.post(
@@ -89,11 +80,10 @@ export const logout = async (): Promise<void> => {
         }
       );
     } catch (error) {
-      // Even if API call fails, we still want to clear local cookies
       console.warn('Logout API call failed, but clearing local session');
     }
   }
-  
+
   // Always clear local cookies regardless of API call result
   deleteCookie('authToken');
   deleteCookie('refreshToken');
@@ -133,3 +123,34 @@ export const resendOTP = async (data: ResendOTPRequest): Promise<any> => {
   }
 };
 
+export const getAllCategoryServices = async (): Promise<any> => {
+  try {
+    const token = getAuthToken();
+    if (!token) throw new Error('User not authenticated');
+    const response = await axios.get(`${API_BASE_URL}/service-category/getAll`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch category services';
+    throw new Error(errorMessage);
+  }
+};
+
+export const getServiceCategoryById = async (id: string): Promise<any> => {
+  try {
+    const token = getAuthToken();
+    if (!token) throw new Error('User not authenticated');
+    const response = await axios.get(`${API_BASE_URL}/service-category/getById/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch category services';
+    throw new Error(errorMessage);
+  }
+};
