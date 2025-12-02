@@ -75,7 +75,7 @@ const ServicesList: React.FC = () => {
                   <Box
                     key={service.id}
                     className="service-card hover-lift smooth-transition"
-                    onClick={() => handleServiceClick(service.id)}
+                    onClick={() => handleServiceClick(service?._id)}
                     sx={{
                       backgroundColor: service.bgColor,
                       borderRadius: "24px",

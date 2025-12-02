@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Box, Container, Typography, Button, TextField, Alert } from '@mui/material';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { ArrowBack } from '@mui/icons-material';
-import { verifyOTP, resendOTP } from '../../utils/auth';
+import { resendOTP, verifyOtp } from '../../utils/auth';
 import './Auth.css';
 
 const OTPVerification: React.FC = () => {
@@ -19,7 +19,6 @@ const OTPVerification: React.FC = () => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
-    // Focus first input on mount
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
@@ -41,18 +40,14 @@ const OTPVerification: React.FC = () => {
   }, [timer, canResend]);
 
   const handleOtpChange = (index: number, value: string) => {
-    // Only allow digits
     if (value && !/^\d$/.test(value)) {
       return;
     }
-
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
     setError('');
     setSuccess('');
-
-    // Auto-focus next input
     if (value && index < otp.length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -99,7 +94,7 @@ const OTPVerification: React.FC = () => {
     setLoading(true);
 
     try {
-      await verifyOTP({ phoneNumber, otp: otpString });
+      await verifyOtp({ phoneNumber, otp: otpString });
       setSuccess('OTP verified successfully!');
       
       // Redirect based on context

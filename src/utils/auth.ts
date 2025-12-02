@@ -17,6 +17,10 @@ export interface LoginResponse {
   refreshToken: string;
 }
 
+export interface ForgotPasswordRequest {
+  phoneNumber: string;
+}
+
 export const login = async (email: string, password: string, role: string): Promise<LoginResponse> => {
   try {
     const response = await axios.post<LoginResponse>(`${API_BASE_URL}/auth/login`, {
@@ -35,9 +39,26 @@ export const login = async (email: string, password: string, role: string): Prom
     if (data.role) {
       setCookie('userRole', data.role, 7);
     }
+    if (data.user?.id) {
+      setCookie('loggedinId', data.user.id, 7);
+    }
     return data;
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+    throw new Error(errorMessage);
+  }
+};
+
+export const forgotPassword = async (data: ForgotPasswordRequest): Promise<any> => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/forgotPassword`,
+      data,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    return response?.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || error.message || 'Forgot password request failed';
     throw new Error(errorMessage);
   }
 };
@@ -83,8 +104,6 @@ export const logout = async (): Promise<void> => {
       console.warn('Logout API call failed, but clearing local session');
     }
   }
-
-  // Always clear local cookies regardless of API call result
   deleteCookie('authToken');
   deleteCookie('refreshToken');
   deleteCookie('userRole');
@@ -103,12 +122,18 @@ export interface ResendOTPRequest {
   phoneNumber: string;
 }
 
-export const verifyOTP = async (data: VerifyOTPRequest): Promise<any> => {
+export const verifyOtp = async (phoneNumber: string, otp: string): Promise<any> => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/verify-otp`, data);
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/verify-otp`, { phoneNumber, otp }, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error: any) {
-    const errorMessage = error.response?.data?.message || error.message || 'OTP verification failed';
+    const errorMessage =
+      error.response?.data?.message || error.message || "OTP verification failed";
     throw new Error(errorMessage);
   }
 };
@@ -154,3 +179,20 @@ export const getServiceCategoryById = async (id: string): Promise<any> => {
     throw new Error(errorMessage);
   }
 };
+
+export const getAllActiveEmployeeOrders = async (id: string): Promise<any> => {
+  try {
+    const token = getAuthToken();
+    if (!token) throw new Error('User not authenticated');
+    const response = await axios.get(`${API_BASE_URL}/order/getOrdersByEmployee/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch active orders';
+    throw new Error(errorMessage);
+  }
+};
+

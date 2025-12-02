@@ -17,14 +17,6 @@ import { useCategoryServices } from '../hooks/useCategoryServices';
 import Loader from '../components/ui/Loader';
 import defaultImage from "../../src/assets/default-image_450.png"
 
-const quantityList = [
-  { value: "1", label: "1" },
-  { value: "2", label: "2" },
-  { value: "3", label: "3" },
-  { value: "4", label: "4" },
-  { value: "5", label: "5" }
-];
-
 export interface Category {
   _id: string;
   categoryName: string;
@@ -36,7 +28,6 @@ export interface Category {
   updatedAt: string;
   __v: number;
 }
-
 
 const ServiceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,10 +41,15 @@ const ServiceDetails: React.FC = () => {
   const navigate = useNavigate();
   const { categories } = useCategoryServices();
 
+  const quantityList = Array.from({ length: 10 }, (_, i) => ({
+    value: `${i + 1}`,
+    label: `${i + 1}`,
+  }));
+
   const categoryOptions = useMemo(() => {
     return categories.map((c: Category) => ({
       value: c._id,
-      label: c.categoryName
+      label: c.categoryName,
     }));
   }, [categories]);
 
@@ -161,7 +157,6 @@ const ServiceDetails: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-
             <Box sx={{ backgroundColor: 'rgba(201, 248, 186, 1)', borderRadius: '24px', padding: { xs: '24px', md: '32px' }, marginBottom: '24px', }} className="animate-slide-up animate-delay-1 hover-lift smooth-transition">
               <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' }, fontWeight: 700, color: '#336B3F', marginBottom: '16px', }}>
                 Service Overview
@@ -170,7 +165,6 @@ const ServiceDetails: React.FC = () => {
                 {serviceDetials?.description}
               </Typography>
             </Box>
-
             <Box sx={{ backgroundColor: 'rgba(252, 233, 233, 1)', borderRadius: '24px', padding: { xs: '24px', md: '32px' }, marginBottom: '24px', }} className="animate-slide-up animate-delay-2 hover-lift smooth-transition">
               <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' }, fontWeight: 700, color: '#d32f2f', marginBottom: '16px', }}>
                 Suitable For
@@ -184,8 +178,6 @@ const ServiceDetails: React.FC = () => {
                 {service.notRecommended}
               </Typography>
             </Box>
-
-            {/* Turnaround & Delivery Section */}
             <Box sx={{ backgroundColor: 'rgba(201, 248, 186, 1)', borderRadius: '24px', padding: { xs: '24px', md: '32px' }, marginBottom: '24px', }} className="animate-slide-up animate-delay-3 hover-lift smooth-transition">
               <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' }, fontWeight: 700, color: '#336B3F', marginBottom: '16px', }}>
                 Turnaround & Delivery
@@ -194,8 +186,6 @@ const ServiceDetails: React.FC = () => {
                 Pickup & Delivery: {serviceDetials?.estimatedDeliveryTime}
               </Typography>
             </Box>
-
-            {/* Customer Reviews Section */}
             <Box sx={{ backgroundColor: 'rgba(252, 233, 233, 1)', borderRadius: '24px', padding: { xs: '24px', md: '32px' }, marginBottom: '24px', }} className="animate-slide-up animate-delay-4 hover-lift smooth-transition">
               <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' }, fontWeight: 700, color: '#d32f2f', marginBottom: '16px', }}>
                 Customer Reviews
@@ -214,8 +204,6 @@ const ServiceDetails: React.FC = () => {
                 ))}
               </Box>
             </Box>
-
-            {/* Continue Button */}
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '32px', }} className="animate-fade-in">
               <Button onClick={() => navigate('/cart')} variant="primary" type="submit" size="large" className="custom-button--green hover-lift button-pulse" >
                 Continue
