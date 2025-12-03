@@ -2,7 +2,7 @@ pipeline {
     agent any
  
     environment {
-        IMAGE_NAME = "docker.io/kartikeytiwari/dry-cleaner"
+        IMAGE_NAME = "docker.io/kartikeytiwari/dry-cleaner-frontend"
         IMAGE_TAG = "${BUILD_NUMBER}"
         CONTAINER_PORT = "7070" 
         HOST_PORT = "7070" 
