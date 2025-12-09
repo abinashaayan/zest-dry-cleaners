@@ -15,7 +15,7 @@ const Loader: React.FC<LoaderProps> = ({
   color = '#2E7D32',
   animationType = 'spinner',
   showText = true,
-  text = "Zest Dry Cleaner",
+  text = "",
   speed = 1
 }) => {
   
