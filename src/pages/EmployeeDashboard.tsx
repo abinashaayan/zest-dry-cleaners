@@ -16,17 +16,6 @@ import { getCookie } from "../utils/cookies";
 import { getAllActiveEmployeeOrders } from "../utils/auth";
 import Loader from "../components/ui/Loader";
 
-interface Order {
-  id: string;
-  customerName: string;
-  phoneNumber: string;
-  time: string;
-  priority: "high" | "low";
-  address: string;
-  serviceType: string;
-  items: number;
-}
-
 const EmployeeDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [employeeActiveOrders, setEmployeeActiveOrders] = useState<any[]>([]);

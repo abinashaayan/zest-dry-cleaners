@@ -85,13 +85,12 @@ const OTPVerification: React.FC = () => {
       setError('Phone number is required');
       return;
     }
-
     setError('');
     setSuccess('');
     setLoading(true);
 
     try {
-      await verifyOtp({ phoneNumber, otp: otpString });
+      await verifyOtp(phoneNumber, otpString);
       setSuccess('OTP verified successfully!');
       
       // Redirect based on context
@@ -228,7 +227,7 @@ const OTPVerification: React.FC = () => {
                   inputRef={(el) => (inputRefs.current[index] = el)}
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  onKeyDown={(e) => handleKeyDown(index, e as React.KeyboardEvent<HTMLInputElement>)}
                   onPaste={handlePaste}
                   disabled={loading}
                   inputProps={{

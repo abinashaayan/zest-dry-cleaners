@@ -7,8 +7,7 @@ import {
   Card,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
-import LocationDialog from "../components/dialogs/LocationDialog";
-import { LocationData } from "../components/dialogs/LocationDialog";
+import LocationDialog, { type LocationData } from "../components/dialogs/LocationDialog";
 
 interface SavedAddress {
   id: string;

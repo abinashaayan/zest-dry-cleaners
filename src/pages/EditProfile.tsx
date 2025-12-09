@@ -31,7 +31,6 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { getCountries, getCountryCallingCode, getExampleNumber, parsePhoneNumber } from "libphonenumber-js";
 import examples from "libphonenumber-js/mobile/examples";
-
 import DashboardNavbar from "../components/DashboardNavbar";
 import TextFieldComponent from "../components/ui/TextField";
 import { Button, Select } from "../components/ui";
@@ -163,10 +162,8 @@ const EditProfile = () => {
     const value = e.target.value;
     // Only allow digits
     const digitsOnly = value.replace(/\D/g, '');
-    // Get max length for current country code using libphonenumber-js
     const countryCodeObj = getCountryCodeFromDialCode(countryCode);
     const maxLength = getMaxLengthForCountry(countryCodeObj);
-    // Limit to max length
     const limitedValue = digitsOnly.slice(0, maxLength);
     setPhoneNumber(limitedValue);
   };
@@ -174,7 +171,6 @@ const EditProfile = () => {
   const handleCountryCodeChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     const newCountryCode = e.target.value as string;
     setCountryCode(newCountryCode);
-    // If current phone number exceeds new country's max length, truncate it
     const countryCodeObj = getCountryCodeFromDialCode(newCountryCode);
     const maxLength = getMaxLengthForCountry(countryCodeObj);
     if (phoneNumber.length > maxLength) {
@@ -261,10 +257,9 @@ const EditProfile = () => {
 
   const handleAddCard = (card: CardData) => {
     setSavedCards((prevCards) => {
-      // Check if card with same ID already exists
       const exists = prevCards.some((c) => c.id === card.id);
       if (exists) {
-        return prevCards; // Return existing state if duplicate
+        return prevCards; 
       }
       return [...prevCards, card];
     });
@@ -272,10 +267,9 @@ const EditProfile = () => {
 
   const handleAddLocation = (location: LocationData) => {
     setSavedLocations((prevLocations) => {
-      // Check if location with same ID already exists
       const exists = prevLocations.some((l) => l.id === location.id);
       if (exists) {
-        return prevLocations; // Return existing state if duplicate
+        return prevLocations;
       }
       return [...prevLocations, location];
     });

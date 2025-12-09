@@ -9,7 +9,7 @@ import {
     StepLabel,
     StepConnector,
     stepConnectorClasses,
-    StepIconProps
+    type StepIconProps
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import DashboardNavbar from "../components/DashboardNavbar";
@@ -23,7 +23,7 @@ interface TimelineStep {
     isCurrent: boolean;
 }
 
-const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
+const CustomStepConnector = styled(StepConnector)(() => ({
     [`&.${stepConnectorClasses.active}`]: {
         [`& .${stepConnectorClasses.line}`]: {
             borderColor: 'var(--primary-dark-green)',
