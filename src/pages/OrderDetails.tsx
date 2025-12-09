@@ -120,7 +120,7 @@ const OrderDetails: React.FC = () => {
                 <Rating
                   value={rating}
                   precision={0.5}
-                  onChange={(newValue) => setRating(newValue)}
+                  onChange={(event, newValue) => setRating(newValue)}
                   sx={{
                     '& .MuiRating-iconFilled': {
                       color: '#FFC107',

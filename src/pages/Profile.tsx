@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, Button, Paper, Avatar, Grid, Divider } from '@mui/material';
+import { Box, Container, Typography, Button, Paper, Avatar, Divider } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import { Edit, Person, Email, LocationOn, Settings } from '@mui/icons-material';
 import TextFieldComponent from '../components/ui/TextField';
 import './Profile.css';
@@ -60,7 +61,7 @@ const Profile: React.FC = () => {
                 <Button
                   variant="outlined"
                   onClick={handleCancel}
-                  fullWidth={xs}
+                  fullWidth
                   sx={{
                     borderColor: '#336B3F',
                     color: '#336B3F',
@@ -74,7 +75,7 @@ const Profile: React.FC = () => {
                 <Button
                   variant="contained"
                   onClick={handleSave}
-                  fullWidth={xs}
+                  fullWidth
                   sx={{
                     backgroundColor: '#336B3F',
                     color: 'white',
@@ -93,7 +94,7 @@ const Profile: React.FC = () => {
           </Box>
 
           <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Box sx={{ textAlign: 'center' }}>
                 <Avatar
                   sx={{
@@ -116,7 +117,7 @@ const Profile: React.FC = () => {
               </Box>
             </Grid>
 
-            <Grid item xs={12} md={8}>
+            <Grid size={{ xs: 12, md: 8 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 2.5, md: 3 } }}>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -127,7 +128,7 @@ const Profile: React.FC = () => {
                   </Box>
                   <Divider sx={{ mb: { xs: 1.5, sm: 2 } }} />
                   <Grid container spacing={{ xs: 1.5, sm: 2 }}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       {isEditing ? (
                         <TextFieldComponent
                           label="First Name"
@@ -138,7 +139,7 @@ const Profile: React.FC = () => {
                         <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.firstName}</Typography>
                       )}
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       {isEditing ? (
                         <TextFieldComponent
                           label="Last Name"
@@ -161,7 +162,7 @@ const Profile: React.FC = () => {
                   </Box>
                   <Divider sx={{ mb: { xs: 1.5, sm: 2 } }} />
                   <Grid container spacing={{ xs: 1.5, sm: 2 }}>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       {isEditing ? (
                         <TextFieldComponent
                           label="Email"
@@ -173,7 +174,7 @@ const Profile: React.FC = () => {
                         <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.email}</Typography>
                       )}
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       {isEditing ? (
                         <TextFieldComponent
                           label="Phone"
@@ -197,7 +198,7 @@ const Profile: React.FC = () => {
                   </Box>
                   <Divider sx={{ mb: { xs: 1.5, sm: 2 } }} />
                   <Grid container spacing={{ xs: 1.5, sm: 2 }}>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       {isEditing ? (
                         <TextFieldComponent
                           label="Address"
@@ -208,7 +209,7 @@ const Profile: React.FC = () => {
                         <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>{profileData.address}</Typography>
                       )}
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       {isEditing ? (
                         <TextFieldComponent
                           label="City"
