@@ -17,9 +17,12 @@ import AddIcon from "@mui/icons-material/Add";
 import LocationDialog from "../components/dialogs/LocationDialog";
 import type { LocationData } from "../components/dialogs/LocationDialog";
 import { GOOGLE_MAPS_API_KEY } from "../utils/config";
-import { useGoogleMaps } from "../hooks/useGoogleMaps";
 import { useCurrentLocation } from "../hooks/useCurrentLocation";
-import { Autocomplete } from "@react-google-maps/api";
+import { useUserAddresses } from "../hooks/useUserAddresses";
+import { Autocomplete, useLoadScript } from "@react-google-maps/api";
+import Loader from "../components/ui/Loader";
+
+const libraries: any[] = ["places"];
 
 import "./RouteSelection.css";
 import { AddLocation, MyLocation } from "@mui/icons-material";
@@ -52,6 +55,9 @@ const RouteSelection: React.FC = () => {
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedDay, setSelectedDay] = useState<string>("");
 
+  // Get addresses from API
+  const { addresses: apiAddresses, loading: addressesLoading, deletingLocationId, handleDeleteAddress } = useUserAddresses();
+  
   // route addresses (dynamic - loaded from sessionStorage or empty)
   const [addresses, setAddresses] = useState<RouteAddress[]>([]);
   const currentLocationFromHook = useCurrentLocation();
@@ -65,7 +71,10 @@ const RouteSelection: React.FC = () => {
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 44.8365, lng: -93.2040 });
 
   // Load Google Maps
-  const { isLoaded, loadError } = useGoogleMaps(GOOGLE_MAPS_API_KEY);
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
 
   useEffect(() => {
     // read selected date/time from session storage (if present)
@@ -119,6 +128,74 @@ const RouteSelection: React.FC = () => {
       }
     }
   }, []);
+
+  // Convert API addresses to RouteAddress format and merge with session addresses
+  useEffect(() => {
+    if (apiAddresses && apiAddresses.length > 0) {
+      const apiRouteAddresses: RouteAddress[] = apiAddresses.map((addr) => {
+        // Format address
+        const parts = [];
+        if (addr.houseNumber) parts.push(addr.houseNumber);
+        if (addr.streetName) parts.push(addr.streetName);
+        if (addr.area) parts.push(addr.area);
+        if (addr.city) parts.push(addr.city);
+        if (addr.state) parts.push(addr.state);
+        if (addr.zipCode) parts.push(addr.zipCode);
+        const formattedAddress = parts.join(", ");
+
+        // Get coordinates
+        let lat: number | undefined;
+        let lng: number | undefined;
+        if (addr.currentAddress && addr.currentAddress.coordinates) {
+          const [longitude, latitude] = addr.currentAddress.coordinates;
+          lat = latitude;
+          lng = longitude;
+        }
+
+        return {
+          id: addr._id,
+          address: formattedAddress,
+          lat,
+          lng,
+        };
+      });
+
+      // Merge with session addresses from sessionStorage, avoiding duplicates
+      const savedAddresses = sessionStorage.getItem("routeAddresses");
+      let sessionAddresses: RouteAddress[] = [];
+      if (savedAddresses) {
+        try {
+          sessionAddresses = JSON.parse(savedAddresses);
+        } catch (e) {
+          console.error("Error parsing saved addresses:", e);
+        }
+      }
+      
+      const apiIds = new Set(apiRouteAddresses.map(a => a.id));
+      const uniqueSessionAddresses = sessionAddresses.filter(a => !apiIds.has(a.id));
+      
+      setAddresses([...apiRouteAddresses, ...uniqueSessionAddresses]);
+      
+      // Select first address if none selected
+      if (!selectedAddressId && apiRouteAddresses.length > 0) {
+        setSelectedAddressId(apiRouteAddresses[0].id);
+      }
+    } else if (!addressesLoading && apiAddresses.length === 0) {
+      // If no API addresses, just use session addresses
+      const savedAddresses = sessionStorage.getItem("routeAddresses");
+      if (savedAddresses) {
+        try {
+          const parsed = JSON.parse(savedAddresses);
+          setAddresses(parsed);
+          if (parsed.length > 0 && !selectedAddressId) {
+            setSelectedAddressId(parsed[0].id);
+          }
+        } catch (e) {
+          console.error("Error parsing saved addresses:", e);
+        }
+      }
+    }
+  }, [apiAddresses, addressesLoading, selectedAddressId]);
 
   // Initialize Google Map
   useEffect(() => {
@@ -272,18 +349,45 @@ const RouteSelection: React.FC = () => {
     setOpenLocationDialog(false);
   };
 
-  // Remove an address
-  const handleRemoveAddress = (addressId: string) => {
-    const updated = addresses.filter((a) => a.id !== addressId);
-    setAddresses(updated);
-    sessionStorage.setItem("routeAddresses", JSON.stringify(updated));
+  // Remove an address (handles both API and session addresses)
+  const handleRemoveAddress = async (addressId: string) => {
+    // Check if this is an API address
+    const isApiAddress = apiAddresses.some(addr => addr._id === addressId);
+    
+    if (isApiAddress) {
+      // Delete from API
+      try {
+        await handleDeleteAddress(addressId, () => {
+          // After successful API delete, remove from local state
+          const updated = addresses.filter((a) => a.id !== addressId);
+          setAddresses(updated);
+          sessionStorage.setItem("routeAddresses", JSON.stringify(updated));
 
-    // If removed address was selected, select first available or clear selection
-    if (selectedAddressId === addressId) {
-      if (updated.length > 0) {
-        setSelectedAddressId(updated[0].id);
-      } else {
-        setSelectedAddressId("");
+          // If removed address was selected, select first available or clear selection
+          if (selectedAddressId === addressId) {
+            if (updated.length > 0) {
+              setSelectedAddressId(updated[0].id);
+            } else {
+              setSelectedAddressId("");
+            }
+          }
+        });
+      } catch (error) {
+        // Error already handled in handleDeleteAddress
+      }
+    } else {
+      // Remove from session storage only
+      const updated = addresses.filter((a) => a.id !== addressId);
+      setAddresses(updated);
+      sessionStorage.setItem("routeAddresses", JSON.stringify(updated));
+
+      // If removed address was selected, select first available or clear selection
+      if (selectedAddressId === addressId) {
+        if (updated.length > 0) {
+          setSelectedAddressId(updated[0].id);
+        } else {
+          setSelectedAddressId("");
+        }
       }
     }
   };
@@ -331,7 +435,7 @@ const RouteSelection: React.FC = () => {
           {/* Google Map container */}
           {loadError && (
             <Box sx={{ p: 2, textAlign: "center", color: "#336B3F" }}>
-              <Typography>Error loading map: {loadError}</Typography>
+              <Typography>Error loading map: {loadError.toString()}</Typography>
             </Box>
           )}
           {!isLoaded && !loadError && (
@@ -427,7 +531,7 @@ const RouteSelection: React.FC = () => {
                     justifyContent: "space-between",
                     background: "#C9F8BA",
                     borderRadius: 2,
-                    padding: "4px 10px",
+                    padding: "4px 2px",
                     gap: 0.5,
                     width: "31%",
                     minWidth: "150px",
@@ -468,13 +572,23 @@ const RouteSelection: React.FC = () => {
                   <IconButton
                     size="small"
                     onClick={(e) => { e.stopPropagation(); handleRemoveAddress(addr.id); }}
+                    disabled={deletingLocationId === addr.id}
                     sx={{
                       color: "#336B3F",
                       p: "2px",
-                      "&:hover": { color: "#fff" }
+                      "&:hover": { color: deletingLocationId === addr.id ? "#336B3F" : "#fff" },
+                      "&:disabled": {
+                        opacity: 0.7,
+                      },
+                      minWidth: "32px",
+                      minHeight: "32px",
                     }}
                   >
-                    <CloseIcon fontSize="small" />
+                    {deletingLocationId === addr.id ? (
+                      <Loader size={16} color="#336B3F" />
+                    ) : (
+                      <CloseIcon fontSize="small" />
+                    )}
                   </IconButton>
                 </Box>
               ))}

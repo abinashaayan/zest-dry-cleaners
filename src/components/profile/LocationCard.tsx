@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Typography, Card, CardContent, Divider, IconButton } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
@@ -6,9 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Button } from "../ui";
 import type { LocationData } from "../dialogs/LocationDialog";
 import { GOOGLE_MAPS_API_KEY } from "../../utils/config";
-import { getUserAddresses, deleteUserAddress } from "../../utils/auth";
-import { getCookie } from "../../utils/cookies";
-import { showSuccessToast } from "../../utils/toast";
+import { useUserAddresses, type ApiAddress } from "../../hooks/useUserAddresses";
 import AddIcon from '@mui/icons-material/Add';
 import Loader from "../ui/Loader";
 
@@ -16,29 +14,9 @@ interface LocationCardProps {
   savedLocations: LocationData[];
   indianStates: Array<{ value: string; label: string }>;
   onAddLocation: () => void;
-  onEditLocation?: (location: LocationData) => void;
+  onEditLocation?: (location: LocationData | ApiAddress) => void;
   onDeleteLocation?: (locationId: string) => void;
-  refreshTrigger?: number; // Add refresh trigger prop
-}
-
-interface ApiAddress {
-  _id: string;
-  userId: string;
-  addressType: string;
-  zipCode: string;
-  houseNumber: string;
-  streetName: string;
-  area: string;
-  landmark?: string;
-  city: string;
-  state: string;
-  isDefault: boolean;
-  currentAddress?: {
-    type: string;
-    coordinates: [number, number]; // [longitude, latitude]
-  };
-  createdAt: string;
-  updatedAt: string;
+  refreshTrigger?: number; 
 }
 
 const LocationCard: React.FC<LocationCardProps> = ({
@@ -48,33 +26,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
   onDeleteLocation,
   refreshTrigger,
 }) => {
-  const [addresses, setAddresses] = useState<ApiAddress[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [deletingLocationId, setDeletingLocationId] = useState<string | null>(null);
-  const userId = getCookie("loggedinId");
-
-  useEffect(() => {
-    const fetchAddresses = async () => {
-      if (!userId) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const response = await getUserAddresses(userId);
-        if (response.data && response.data.addresses) {
-          setAddresses(response.data.addresses);
-        }
-      } catch (error: any) {
-        console.error("Error fetching addresses:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAddresses();
-  }, [userId, refreshTrigger]);
+  const { addresses, loading, deletingLocationId, handleDeleteAddress } = useUserAddresses(refreshTrigger);
 
   // Convert API address to LocationData format
   const formatAddress = (apiAddress: ApiAddress): string => {
@@ -90,51 +42,34 @@ const LocationCard: React.FC<LocationCardProps> = ({
 
   // Handle delete with API call
   const handleDelete = async (locationId: string, isApiAddress: boolean) => {
-    setDeletingLocationId(locationId);
-    try {
-      if (isApiAddress) {
-        await deleteUserAddress(locationId);
-        showSuccessToast("Address deleted successfully!");
-        // Refresh addresses
-        const response = await getUserAddresses(userId || "");
-        if (response.data && response.data.addresses) {
-          setAddresses(response.data.addresses);
-        }
-        // Also call the parent delete handler if provided
-        if (onDeleteLocation) {
-          onDeleteLocation(locationId);
-        }
-      } else {
-        // For non-API addresses, just call the parent handler
-        if (onDeleteLocation) {
-          onDeleteLocation(locationId);
-        }
+    if (isApiAddress) {
+      try {
+        await handleDeleteAddress(locationId, () => {
+          if (onDeleteLocation) {
+            onDeleteLocation(locationId);
+          }
+        });
+      } catch (error) {
+        // Error already handled in handleDeleteAddress
       }
-    } catch (error: any) {
-      console.error("Error deleting address:", error);
-      showSuccessToast(error.message || "Failed to delete address");
-    } finally {
-      setDeletingLocationId(null);
+    } else {
+      if (onDeleteLocation) {
+        onDeleteLocation(locationId);
+      }
     }
   };
 
-  // Get coordinates for map URL
   const getMapUrl = (address: ApiAddress): string => {
     let center = formatAddress(address);
-    
-    // Use coordinates if available
     if (address.currentAddress && address.currentAddress.coordinates) {
       const [longitude, latitude] = address.currentAddress.coordinates;
       center = `${latitude},${longitude}`;
     }
-    
     return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
       center
     )}&zoom=15&size=400x150&markers=color:blue|label:H|${encodeURIComponent(center)}&key=${GOOGLE_MAPS_API_KEY}`;
   };
 
-  // Combine API addresses with saved locations (from props)
-  // Filter out duplicates by checking if savedLocation ID already exists in addresses
   const addressIds = new Set(addresses.map(addr => addr._id));
   const uniqueSavedLocations = savedLocations.filter(loc => !addressIds.has(loc.id));
   
@@ -144,7 +79,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
       address: formatAddress(addr),
       zipCode: addr.zipCode,
       state: addr.state,
-      apiAddress: addr, // Keep reference to original API data
+      apiAddress: addr, 
     })),
     ...uniqueSavedLocations,
   ];
@@ -213,7 +148,6 @@ const LocationCard: React.FC<LocationCardProps> = ({
               </Typography>
             ) : (
               allLocations.map((location) => {
-                // Check if this is an API address or a saved location
                 const apiAddress = (location as any).apiAddress as ApiAddress | undefined;
                 const mapUrl = apiAddress ? getMapUrl(apiAddress) : `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
                   location.address
@@ -263,7 +197,6 @@ const LocationCard: React.FC<LocationCardProps> = ({
                         <IconButton
                           onClick={() => {
                             if (onEditLocation) {
-                              // Pass the API address if available, otherwise pass the location
                               if (apiAddress) {
                                 onEditLocation(apiAddress as any);
                               } else {
