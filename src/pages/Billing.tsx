@@ -257,20 +257,36 @@ const Billing: React.FC = () => {
     initializeMap();
   }, [isLoaded]);
 
-  // Update map markers when addresses or selected address changes
+  // Update map markers and route line when addresses or selected address changes
   useEffect(() => {
     if (!googleMapRef.current || !isLoaded || !window.google || !window.google.maps) return;
 
-    // Clear existing markers
+    // Clear existing markers and polyline
     if ((googleMapRef.current as any).markers) {
       (googleMapRef.current as any).markers.forEach((marker: any) => marker.setMap(null));
     }
     (googleMapRef.current as any).markers = [];
 
-    // Add marker for selected address
+    // Clear existing polyline
+    if ((googleMapRef.current as any).polyline) {
+      (googleMapRef.current as any).polyline.setMap(null);
+    }
+    if ((googleMapRef.current as any).directionsRenderer) {
+      (googleMapRef.current as any).directionsRenderer.setMap(null);
+    }
+
+    let currentLocationLat: number | null = null;
+    let currentLocationLng: number | null = null;
+    let selectedAddrLat: number | null = null;
+    let selectedAddrLng: number | null = null;
+
+    // Get selected address coordinates
     if (selectedAddressId) {
       const selectedAddr = addresses.find(addr => addr.id === selectedAddressId);
       if (selectedAddr && selectedAddr.lat && selectedAddr.lng) {
+        selectedAddrLat = selectedAddr.lat;
+        selectedAddrLng = selectedAddr.lng;
+
         const marker = new window.google.maps.Marker({
           position: { lat: selectedAddr.lat, lng: selectedAddr.lng },
           map: googleMapRef.current,
@@ -285,20 +301,20 @@ const Billing: React.FC = () => {
           title: selectedAddr.address,
         });
         (googleMapRef.current as any).markers.push(marker);
-        
-        // Center map on selected address
-        googleMapRef.current.setCenter({ lat: selectedAddr.lat, lng: selectedAddr.lng });
       }
     }
 
-    // Add marker for current location if available
+    // Get current location coordinates and add marker
     if (currentLocation && currentLocation !== "Loading...") {
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ address: currentLocation }, (results, status) => {
         if (status === 'OK' && results && results[0] && googleMapRef.current) {
           const location = results[0].geometry.location;
+          currentLocationLat = location.lat();
+          currentLocationLng = location.lng();
+
           const marker = new window.google.maps.Marker({
-            position: { lat: location.lat(), lng: location.lng() },
+            position: { lat: currentLocationLat, lng: currentLocationLng },
             map: googleMapRef.current,
             icon: {
               path: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z",
@@ -315,10 +331,89 @@ const Billing: React.FC = () => {
             (googleMapRef.current as any).markers = [];
           }
           (googleMapRef.current as any).markers.push(marker);
+
+          // Draw route line if both locations are available
+          if (selectedAddrLat !== null && selectedAddrLng !== null && currentLocationLat !== null && currentLocationLng !== null) {
+            drawRoute(currentLocationLat, currentLocationLng, selectedAddrLat, selectedAddrLng);
+          }
         }
       });
+    } else if (selectedAddrLat !== null && selectedAddrLng !== null) {
+      // Center map on selected address if no current location
+      googleMapRef.current.setCenter({ lat: selectedAddrLat, lng: selectedAddrLng });
     }
   }, [selectedAddressId, addresses, currentLocation, isLoaded]);
+
+  // Function to draw route line between two points
+  const drawRoute = (startLat: number, startLng: number, endLat: number, endLng: number) => {
+    if (!googleMapRef.current || !window.google || !window.google.maps) return;
+
+    try {
+      // Use Directions Service to get the route
+      const directionsService = new window.google.maps.DirectionsService();
+      const directionsRenderer = new window.google.maps.DirectionsRenderer({
+        map: googleMapRef.current,
+        suppressMarkers: true, // Don't show default markers, we have custom ones
+        polylineOptions: {
+          strokeColor: "#336B3F",
+          strokeWeight: 4,
+          strokeOpacity: 0.8,
+        },
+      });
+
+      directionsService.route(
+        {
+          origin: { lat: startLat, lng: startLng },
+          destination: { lat: endLat, lng: endLng },
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (status === 'OK' && result) {
+            directionsRenderer.setDirections(result);
+            (googleMapRef.current as any).directionsRenderer = directionsRenderer;
+
+            // Fit map to show both locations
+            const bounds = new window.google.maps.LatLngBounds();
+            bounds.extend({ lat: startLat, lng: startLng });
+            bounds.extend({ lat: endLat, lng: endLng });
+            googleMapRef.current.fitBounds(bounds);
+          } else {
+            // Fallback: Draw simple polyline if directions service fails
+            drawSimplePolyline(startLat, startLng, endLat, endLng);
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error drawing route:", error);
+      // Fallback: Draw simple polyline
+      drawSimplePolyline(startLat, startLng, endLat, endLng);
+    }
+  };
+
+  // Fallback function to draw a simple straight line polyline
+  const drawSimplePolyline = (startLat: number, startLng: number, endLat: number, endLng: number) => {
+    if (!googleMapRef.current || !window.google || !window.google.maps) return;
+
+    const polyline = new window.google.maps.Polyline({
+      path: [
+        { lat: startLat, lng: startLng },
+        { lat: endLat, lng: endLng },
+      ],
+      geodesic: true,
+      strokeColor: "#336B3F",
+      strokeOpacity: 0.8,
+      strokeWeight: 4,
+      map: googleMapRef.current,
+    });
+
+    (googleMapRef.current as any).polyline = polyline;
+
+    // Fit map to show both locations
+    const bounds = new window.google.maps.LatLngBounds();
+    bounds.extend({ lat: startLat, lng: startLng });
+    bounds.extend({ lat: endLat, lng: endLng });
+    googleMapRef.current.fitBounds(bounds);
+  };
 
   // Calculate subtotal from cart items
   const subtotal = cartItems.reduce(
