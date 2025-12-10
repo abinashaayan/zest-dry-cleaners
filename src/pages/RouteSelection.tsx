@@ -396,6 +396,8 @@ const RouteSelection: React.FC = () => {
   const handleProceed = () => {
     // Save current addresses to sessionStorage before navigating
     sessionStorage.setItem("routeAddresses", JSON.stringify(addresses));
+    // Save selected address ID
+    sessionStorage.setItem("selectedAddressId", selectedAddressId);
     navigate("/billing");
   };
 
@@ -465,7 +467,6 @@ const RouteSelection: React.FC = () => {
           <Typography className="time-text">{selectedTime}</Typography>
         </Box>
 
-        {/* Static yellow marker (design element) near center-right (keeps visual parity with Figma) */}
         <Box className="design-static-marker">
           <Box
             sx={{
@@ -491,7 +492,6 @@ const RouteSelection: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Recenter button (positioned on map) */}
         <Box className="recenter-btn">
           <IconButton
             onClick={handleRecenter}
@@ -503,12 +503,10 @@ const RouteSelection: React.FC = () => {
               "&:hover": { backgroundColor: "#2d5a35" },
             }}
           >
-            {/* simple crosshair with CSS circle inside */}
             <Box sx={{ width: 28, height: 28, borderRadius: "50%", border: "2px solid #fff" }} />
           </IconButton>
         </Box>
 
-        {/* Address Selection Panel Card - positioned on map */}
         <Box className="address-card">
           <Card sx={{ p: 1, backgroundColor: "#336B3F", borderRadius: 3 }}>
             <RadioGroup

@@ -387,3 +387,28 @@ export const deleteUserAddress = async (addressId: string): Promise<any> => {
     throw new Error(error.response?.data?.message || "Failed to delete address");
   }
 };
+
+// ======================== BOOK PICKUP ========================
+export const bookPickup = async (payload: {
+  userId: string;
+  pickupAddressId: string;
+  deliveryAddressId: string;
+  scheduledPickupDate: string;
+  scheduledPickupTimeSlot: string;
+}): Promise<any> => {
+  try {
+    const token = getAuthToken();
+    if (!token) throw new Error("User not authenticated");
+
+    const response = await axios.post(`${API_BASE_URL}/order/bookPickup`, payload, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    return response;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to book pickup");
+  }
+};

@@ -10,15 +10,40 @@ import {
   Button,
   IconButton,
   TextField,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import StarIcon from "@mui/icons-material/Star";
+import MyLocation from "@mui/icons-material/MyLocation";
+import AddLocation from "@mui/icons-material/AddLocation";
 import { useGoogleMaps } from "../hooks/useGoogleMaps";
+import { useCurrentLocation } from "../hooks/useCurrentLocation";
 import { GOOGLE_MAPS_API_KEY } from "../utils/config";
+import { bookPickup, getCart } from "../utils/auth";
+import { getCookie } from "../utils/cookies";
+import { showSuccessToast } from "../utils/toast";
+import Loader from "../components/ui/Loader";
+import { Autocomplete, useLoadScript } from "@react-google-maps/api";
+
+const libraries: any[] = ["places"];
+
+interface CartItem {
+  categoryId: {
+    _id: string;
+    categoryName: string;
+    profileImage?: string;
+    pricePerPiece?: number;
+    estimatedDeliveryTime?: string;
+  };
+  quantity: number;
+  _id: string;
+}
 
 const Billing: React.FC = () => {
   const navigate = useNavigate();
@@ -26,32 +51,155 @@ const Billing: React.FC = () => {
   const [promoCode, setPromoCode] = useState("A9CCXJP");
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
   const [savedCards, setSavedCards] = useState<CardData[]>([]);
-  const [items] = useState([
-    { id: 1, name: "Iron", price: 20 },
-  ]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
   const [serviceCharge] = useState(2);
   const [promoDiscount] = useState(20);
-  const [addresses] = useState([
+  const [addresses, setAddresses] = useState<Array<{
+    id: string;
+    address: string;
+    icon: string;
+    lat?: number;
+    lng?: number;
+  }>>([
     { id: "1", address: "2045 Lodgeville Street, Eagan", icon: "circle" },
     { id: "2", address: "3329 Joyce Stree, PA, USA", icon: "star" },
   ]);
+  const [isBooking, setIsBooking] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+  const [distance, setDistance] = useState<string>("");
+  const currentLocationFromHook = useCurrentLocation();
+  const [currentLocation, setCurrentLocation] = useState<string>(currentLocationFromHook);
+  const currentLocationAutocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(null);
+  const currentLocationInputRef = React.useRef<HTMLInputElement>(null);
 
+  const { isLoaded: isMapsLoaded } = useLoadScript({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
   const { isLoaded } = useGoogleMaps(GOOGLE_MAPS_API_KEY);
   const mapRef = React.useRef<HTMLDivElement>(null);
   const googleMapRef = React.useRef<any>(null);
 
+  // Fetch cart data
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        setLoading(true);
+        const data = await getCart();
+        if (data && data.cart && data.cart.selectedCategories) {
+          setCartItems(data.cart.selectedCategories);
+          setTotalAmount(data.totalAmount || 0);
+        }
+      } catch (err) {
+        console.error("Error fetching cart data:", err);
+        showSuccessToast("Failed to load cart data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCartData();
+  }, []);
+
   useEffect(() => {
     // Load addresses from sessionStorage if available
     const routeAddresses = sessionStorage.getItem("routeAddresses");
+    const savedSelectedAddressId = sessionStorage.getItem("selectedAddressId");
+    
     if (routeAddresses) {
       try {
-        JSON.parse(routeAddresses);
-        // Use parsed addresses if available
+        const parsed = JSON.parse(routeAddresses);
+        if (parsed && parsed.length > 0) {
+          // Format addresses for display
+          const formattedAddresses = parsed.map((addr: any, index: number) => ({
+            id: addr.id,
+            address: addr.address,
+            icon: index === 0 ? "star" : "circle",
+            lat: addr.lat,
+            lng: addr.lng,
+          }));
+          setAddresses(formattedAddresses);
+          
+          // Set selected address if available
+          if (savedSelectedAddressId) {
+            setSelectedAddressId(savedSelectedAddressId);
+          } else if (formattedAddresses.length > 0) {
+            setSelectedAddressId(formattedAddresses[0].id);
+          }
+        }
       } catch (e) {
         console.error("Error parsing route addresses:", e);
       }
     }
   }, []);
+
+  // Sync currentLocation state with hook value when it changes
+  useEffect(() => {
+    if (currentLocationFromHook && currentLocationFromHook !== 'Loading...') {
+      setCurrentLocation(currentLocationFromHook);
+    }
+  }, [currentLocationFromHook]);
+
+  // Calculate distance when current location or selected address changes
+  useEffect(() => {
+    if (currentLocation && selectedAddressId && isLoaded && window.google) {
+      calculateDistance();
+    }
+  }, [currentLocation, selectedAddressId, isLoaded]);
+
+  const calculateDistance = () => {
+    if (!window.google || !window.google.maps || !selectedAddressId) return;
+
+    const selectedAddr = addresses.find(addr => addr.id === selectedAddressId);
+    if (!selectedAddr || !selectedAddr.lat || !selectedAddr.lng) return;
+
+    // Geocode current location
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: currentLocation }, (results, status) => {
+      if (status === 'OK' && results && results[0]) {
+        const currentLocationLat = results[0].geometry.location.lat();
+        const currentLocationLng = results[0].geometry.location.lng();
+
+        // Calculate distance using Haversine formula
+        const R = 6371e3; // Earth's radius in meters
+        const φ1 = (currentLocationLat * Math.PI) / 180;
+        const φ2 = (selectedAddr.lat! * Math.PI) / 180;
+        const Δφ = ((selectedAddr.lat! - currentLocationLat) * Math.PI) / 180;
+        const Δλ = ((selectedAddr.lng! - currentLocationLng) * Math.PI) / 180;
+
+        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        const distanceInMeters = R * c;
+        
+        if (distanceInMeters < 1000) {
+          setDistance(`${Math.round(distanceInMeters)}m`);
+        } else {
+          setDistance(`${(distanceInMeters / 1000).toFixed(1)}km`);
+        }
+      } else {
+        // Fallback: use distance service
+        const service = new window.google.maps.DistanceMatrixService();
+        service.getDistanceMatrix(
+          {
+            origins: [currentLocation],
+            destinations: [{ lat: selectedAddr.lat!, lng: selectedAddr.lng! }],
+            travelMode: window.google.maps.TravelMode.DRIVING,
+          },
+          (response, status) => {
+            if (status === 'OK' && response && response.rows[0] && response.rows[0].elements[0]) {
+              const distanceText = response.rows[0].elements[0].distance.text;
+              setDistance(distanceText);
+            }
+          }
+        );
+      }
+    });
+  };
 
   // Initialize map
   useEffect(() => {
@@ -101,37 +249,6 @@ const Billing: React.FC = () => {
         });
 
         googleMapRef.current = map;
-
-        // Add yellow marker
-        new window.google.maps.Marker({
-          position: { lat: 44.8365, lng: -93.2040 },
-          map: map,
-          icon: {
-            path: window.google.maps.SymbolPath.CIRCLE,
-            scale: 12,
-            fillColor: "#FFD700",
-            fillOpacity: 1,
-            strokeColor: "#fff",
-            strokeWeight: 3,
-          },
-        });
-
-        // Add blue home icon using a custom SVG path
-        const homeIcon = {
-          path: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z",
-          fillColor: "#2196F3",
-          fillOpacity: 1,
-          strokeColor: "#fff",
-          strokeWeight: 2,
-          scale: 1.5,
-          anchor: new window.google.maps.Point(12, 20),
-        };
-
-        new window.google.maps.Marker({
-          position: { lat: 44.8380, lng: -93.2060 },
-          map: map,
-          icon: homeIcon,
-        });
       } catch (error) {
         console.error("Error initializing map:", error);
       }
@@ -140,27 +257,171 @@ const Billing: React.FC = () => {
     initializeMap();
   }, [isLoaded]);
 
-  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-  const total = subtotal + serviceCharge - promoDiscount;
+  // Update map markers when addresses or selected address changes
+  useEffect(() => {
+    if (!googleMapRef.current || !isLoaded || !window.google || !window.google.maps) return;
+
+    // Clear existing markers
+    if ((googleMapRef.current as any).markers) {
+      (googleMapRef.current as any).markers.forEach((marker: any) => marker.setMap(null));
+    }
+    (googleMapRef.current as any).markers = [];
+
+    // Add marker for selected address
+    if (selectedAddressId) {
+      const selectedAddr = addresses.find(addr => addr.id === selectedAddressId);
+      if (selectedAddr && selectedAddr.lat && selectedAddr.lng) {
+        const marker = new window.google.maps.Marker({
+          position: { lat: selectedAddr.lat, lng: selectedAddr.lng },
+          map: googleMapRef.current,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: "#FFD700",
+            fillOpacity: 1,
+            strokeColor: "#fff",
+            strokeWeight: 3,
+          },
+          title: selectedAddr.address,
+        });
+        (googleMapRef.current as any).markers.push(marker);
+        
+        // Center map on selected address
+        googleMapRef.current.setCenter({ lat: selectedAddr.lat, lng: selectedAddr.lng });
+      }
+    }
+
+    // Add marker for current location if available
+    if (currentLocation && currentLocation !== "Loading...") {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: currentLocation }, (results, status) => {
+        if (status === 'OK' && results && results[0] && googleMapRef.current) {
+          const location = results[0].geometry.location;
+          const marker = new window.google.maps.Marker({
+            position: { lat: location.lat(), lng: location.lng() },
+            map: googleMapRef.current,
+            icon: {
+              path: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z",
+              fillColor: "#2196F3",
+              fillOpacity: 1,
+              strokeColor: "#fff",
+              strokeWeight: 2,
+              scale: 1.5,
+              anchor: new window.google.maps.Point(12, 20),
+            },
+            title: currentLocation,
+          });
+          if (!(googleMapRef.current as any).markers) {
+            (googleMapRef.current as any).markers = [];
+          }
+          (googleMapRef.current as any).markers.push(marker);
+        }
+      });
+    }
+  }, [selectedAddressId, addresses, currentLocation, isLoaded]);
+
+  // Calculate subtotal from cart items
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + (item.categoryId.pricePerPiece || 0) * item.quantity,
+    0
+  );
+  
+  // Use API totalAmount if available, otherwise calculate
+  const calculatedSubtotal = totalAmount > 0 ? totalAmount : subtotal;
+  const total = calculatedSubtotal + serviceCharge - promoDiscount;
 
   const handleRemovePromo = () => {
     setPromoCode("");
   };
 
-  const handleContinue = () => {
-    if (paymentMethod === "online") {
-      setOpenPaymentDialog(true);
-    } else {
-      navigate("/order-confirmation");
+  const handleContinue = async () => {
+    try {
+      // Get data from sessionStorage
+      const userId = getCookie("loggedinId");
+      const selectedAddressId = sessionStorage.getItem("selectedAddressId");
+      const selectedDate = sessionStorage.getItem("selectedDate");
+      const selectedTime = sessionStorage.getItem("selectedTime");
+
+      if (!userId || !selectedAddressId || !selectedDate || !selectedTime) {
+        showSuccessToast("Please complete all steps before proceeding");
+        return;
+      }
+
+      // Format date (convert ISO string to YYYY-MM-DD)
+      const dateObj = new Date(selectedDate);
+      const formattedDate = dateObj.toISOString().split('T')[0];
+
+      if (paymentMethod === "online") {
+        setOpenPaymentDialog(true);
+      } else {
+        // Book pickup for cash payment
+        setIsBooking(true);
+        try {
+          await bookPickup({
+            userId,
+            pickupAddressId: selectedAddressId,
+            deliveryAddressId: selectedAddressId, // Using same address for both
+            scheduledPickupDate: formattedDate,
+            scheduledPickupTimeSlot: selectedTime,
+          });
+          showSuccessToast("Order booked successfully!");
+          navigate("/order-confirmation");
+        } catch (error: any) {
+          console.error("Error booking pickup:", error);
+          showSuccessToast(error.message || "Failed to book order");
+        } finally {
+          setIsBooking(false);
+        }
+      }
+    } catch (error: any) {
+      console.error("Error in handleContinue:", error);
+      showSuccessToast("An error occurred. Please try again.");
     }
   };
 
-  const handlePaymentComplete = (card?: CardData) => {
+  const handlePaymentComplete = async (card?: CardData) => {
     if (card) {
       setSavedCards([...savedCards, card]);
     }
     setOpenPaymentDialog(false);
-    navigate("/order-confirmation");
+    
+    // Book pickup after payment
+    try {
+      const userId = getCookie("loggedinId");
+      const selectedAddressId = sessionStorage.getItem("selectedAddressId");
+      const selectedDate = sessionStorage.getItem("selectedDate");
+      const selectedTime = sessionStorage.getItem("selectedTime");
+
+      if (!userId || !selectedAddressId || !selectedDate || !selectedTime) {
+        showSuccessToast("Please complete all steps before proceeding");
+        return;
+      }
+
+      // Format date
+      const dateObj = new Date(selectedDate);
+      const formattedDate = dateObj.toISOString().split('T')[0];
+
+      setIsBooking(true);
+      try {
+        await bookPickup({
+          userId,
+          pickupAddressId: selectedAddressId,
+          deliveryAddressId: selectedAddressId,
+          scheduledPickupDate: formattedDate,
+          scheduledPickupTimeSlot: selectedTime,
+        });
+        showSuccessToast("Order booked successfully!");
+        navigate("/order-confirmation");
+      } catch (error: any) {
+        console.error("Error booking pickup:", error);
+        showSuccessToast(error.message || "Failed to book order");
+      } finally {
+        setIsBooking(false);
+      }
+    } catch (error: any) {
+      console.error("Error in handlePaymentComplete:", error);
+      showSuccessToast("An error occurred. Please try again.");
+    }
   };
 
   const handleAddCard = (card: CardData) => {
@@ -204,21 +465,44 @@ const Billing: React.FC = () => {
             Billings
           </Typography>
 
-          {/* Iron */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              mb: 2,
-            }}
-          >
-            <Typography variant="h5" sx={{ color: "#fff", fontWeight: 'bold' }}>
-              Iron
+          {/* Cart Items */}
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+              <Loader />
+            </Box>
+          ) : cartItems.length === 0 ? (
+            <Typography variant="h6" sx={{ color: "#fff", textAlign: "center", py: 4 }}>
+              No items in cart
             </Typography>
-            <Typography variant="h5" sx={{ color: "#fff", fontWeight: 'bold' }}>
-              ${items[0].price}
-            </Typography>
-          </Box>
+          ) : (
+            cartItems.map((item) => {
+              const itemTotal = (item.categoryId.pricePerPiece || 0) * item.quantity;
+              return (
+                <Box
+                  key={item._id}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 2,
+                  }}
+                >
+                  <Box>
+                    <Typography variant="h5" sx={{ color: "#fff", fontWeight: 'bold' }}>
+                      {item.categoryId.categoryName}
+                    </Typography>
+                    {item.quantity > 1 && (
+                      <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "0.85rem" }}>
+                        Qty: {item.quantity}
+                      </Typography>
+                    )}
+                  </Box>
+                  <Typography variant="h5" sx={{ color: "#fff", fontWeight: 'bold' }}>
+                    ${itemTotal.toFixed(2)}
+                  </Typography>
+                </Box>
+              );
+            })
+          )}
 
           {/* Service Charge */}
           <Box
@@ -402,96 +686,162 @@ const Billing: React.FC = () => {
             />
 
             {/* Distance Badge */}
-            <Box
-              sx={{
-                position: "absolute",
-                top: 10,
-                right: 10,
-                backgroundColor: "#336B3F",
-                color: "#fff",
-                borderRadius: "20px",
-                px: 1.5,
-                py: 0.5,
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                zIndex: 1000,
-              }}
-            >
-              847m
-            </Box>
+            {distance && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  backgroundColor: "#336B3F",
+                  color: "#fff",
+                  borderRadius: "20px",
+                  px: 1.5,
+                  py: 0.5,
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  zIndex: 1000,
+                }}
+              >
+                {distance}
+              </Box>
+            )}
           </Box>
 
-          {/* Address List */}
-          <Box sx={{ mb: 3, flex: 1 }}>
-            {addresses.map((addr, index) => (
-              <Box key={addr.id}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    mb: 1.5,
+          {/* Address Selection with Radio Buttons */}
+          <Box sx={{ mb: 2 }}>
+            <RadioGroup
+              value={selectedAddressId}
+              onChange={(e) => setSelectedAddressId(e.target.value)}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              {addresses.map((addr) => (
+                <FormControlLabel
+                  key={addr.id}
+                  value={addr.id}
+                  control={
+                    <Radio
+                      sx={{
+                        color: "rgba(201, 248, 186, 1)",
+                        "&.Mui-checked": { color: "rgba(201, 248, 186, 1)" },
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography
+                      sx={{
+                        color: "#fff",
+                        fontSize: "0.95rem",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {addr.address}
+                    </Typography>
+                  }
+                />
+              ))}
+            </RadioGroup>
+          </Box>
+
+          {/* Divider */}
+          <Divider sx={{ height: "2px", background: "#FFFFFF", my: 1.5 }} />
+
+          {/* Current Location */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, py: 1, mb: 2 }}>
+            <MyLocation sx={{ fontSize: 24, color: "rgba(201,248,186,1)" }} />
+            {isMapsLoaded ? (
+              <Box sx={{ position: "relative", flex: 1 }}>
+                <Autocomplete
+                  onLoad={(ref) => {
+                    currentLocationAutocompleteRef.current = ref;
+                  }}
+                  onPlaceChanged={() => {
+                    if (currentLocationAutocompleteRef.current) {
+                      const place = currentLocationAutocompleteRef.current.getPlace();
+                      if (place) {
+                        const addressValue = place.formatted_address || place.name || "";
+                        setCurrentLocation(addressValue);
+                      }
+                    }
                   }}
                 >
-                  <Box
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: "50%",
-                      border: "2px solid rgba(201, 248, 186, 1)",
-                      backgroundColor: "transparent",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      mr: 2,
-                    }}
-                  >
-                    {addr.icon === "circle" ? (
-                      <Box
-                        sx={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: "50%",
-                          backgroundColor: "#336B3F",
-                        }}
-                      />
-                    ) : (
-                      <StarIcon
-                        sx={{
-                          color: "#336B3F",
-                          fontSize: 18,
-                        }}
-                      />
-                    )}
-                  </Box>
-                  <Typography
-                    sx={{
-                      color: "#fff",
-                      fontSize: "0.95rem",
-                      fontWeight: 400,
-                    }}
-                  >
-                    {addr.address}
-                  </Typography>
-                </Box>
-                {index < addresses.length - 1 && (
-                  <Box
-                    sx={{
-                      width: 2,
-                      height: 20,
-                      borderLeft: "2px dotted rgba(201, 248, 186, 0.5)",
-                      ml: 2.5,
-                      mb: 1,
+                  <input
+                    ref={currentLocationInputRef}
+                    type="text"
+                    value={currentLocation}
+                    onChange={(e) => setCurrentLocation(e.target.value)}
+                    placeholder="Type or choose current location"
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      color: "rgba(201,248,186,1)",
+                      fontSize: "0.9rem",
+                      width: "100%",
                     }}
                   />
-                )}
+                </Autocomplete>
+
+                <style>{`
+                  .pac-container {
+                    z-index: 1400 !important;
+                    border-radius: 14px;
+                    margin-top: 4px;
+                  }
+                  .pac-item {
+                    padding: 10px;
+                    cursor: pointer;
+                  }
+                  .pac-item:hover {
+                    background-color: #f5f5f5;
+                  }
+                `}</style>
               </Box>
-            ))}
+            ) : (
+              <input
+                type="text"
+                value={currentLocation}
+                onChange={(e) => setCurrentLocation(e.target.value)}
+                placeholder="Loading location autocomplete..."
+                disabled
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  color: "rgba(201,248,186,0.6)",
+                  fontSize: "0.9rem",
+                  width: "100%",
+                  cursor: "not-allowed",
+                }}
+              />
+            )}
+            {currentLocation && currentLocation !== "Loading..." && (
+              <IconButton
+                size="small"
+                onClick={() => setCurrentLocation("")}
+                sx={{ color: "rgba(255,255,255,0.85)", "&:hover": { color: "#fff" } }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            )}
+          </Box>
+
+          {/* Selected Address Display */}
+          <Box sx={{ mb: 2, color: "rgba(201, 248, 186, 1)", fontSize: "0.9rem", fontWeight: 600, display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="body1" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <AddLocation sx={{ fontSize: '24px' }} />
+              {selectedAddressId ? addresses.find((a) => a.id === selectedAddressId)?.address : "No address selected"}
+            </Typography>
           </Box>
 
           {/* Continue Button */}
           <Button
             onClick={handleContinue}
             fullWidth
+            disabled={isBooking}
             sx={{
               backgroundColor: "rgba(201, 248, 186, 1)",
               color: "#336B3F",
@@ -503,9 +853,20 @@ const Billing: React.FC = () => {
               "&:hover": {
                 backgroundColor: "rgba(201, 248, 186, 0.8)",
               },
+              "&:disabled": {
+                backgroundColor: "rgba(201, 248, 186, 0.6)",
+                color: "#336B3F",
+              },
             }}
           >
-            Continue
+            {isBooking ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Loader size={20} color="#336B3F" />
+                Booking...
+              </Box>
+            ) : (
+              "Continue"
+            )}
           </Button>
         </Card>
       </Box>
